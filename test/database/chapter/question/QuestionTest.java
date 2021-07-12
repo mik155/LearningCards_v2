@@ -1,10 +1,12 @@
+package database.chapter.question;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.lang.reflect.Field;
 
 import Utils.Utils;
-import database.Question;
+import database.chapter.question.Question;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

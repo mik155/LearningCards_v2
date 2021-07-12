@@ -1,5 +1,6 @@
 package Utils;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -66,6 +67,15 @@ public class Utils {
         }
         return fileNameCandidate;
     }
+
+    public static Point getCenterFramePoint(int frameWidth, int frameHeigth)
+    {
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (dimension.width - frameWidth) / 2;
+        int y = (dimension.height - frameHeigth) / 2;
+        return new Point(x, y);
+    }
+
 
     private static String nameGenerator(final String segment, int number)
     {

@@ -2,16 +2,16 @@ package database;
 
 public enum Mode
 {
-    READ
+    CREATE
     {
         public boolean open()
         {
-            return true;
+            return false;
         }
 
         public boolean create()
         {
-            return false;
+            return true;
         }
     },
 

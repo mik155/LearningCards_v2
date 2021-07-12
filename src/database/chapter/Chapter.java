@@ -1,12 +1,15 @@
-package database;
+package database.chapter;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import Utils.Utils;
+import database.chapter.question.Question;
+import database.chapter.question.QuestionState;
 
 public class Chapter {
 
@@ -23,13 +26,18 @@ public class Chapter {
       public booolen removeQuestion(final Path path)
             if operation succed, returns true. In other case returns false.
 
+      public Question nextQuestion()
+            Returns next active question. If there are no active questions left, returns null.
+
+      public void reset()
 
       public void setName(final String name)
-      public void setActive(boolean active)
+      public void setActive(boolean active,final  Path path)
       public boolean setQuestionState(final Path path,final QuestionState state)
 
       public String getName()
       public Path getPath()
+      public List getQuestions()
       public int getActiveQuestionsNumber()
       public int getInCorrectAnsweredQuestions()
       public int getCorrectAnsweredQuestions()
@@ -38,16 +46,21 @@ public class Chapter {
     private List<Question> questionList;
     private String chapterName;
     private Path path;
+    private Iterator iterator;
 
     private int activeQuestionsNumber;
     private int correctAnsweredQuestions;
     private int inCorrectAnsweredQuestions;
+    private Question lastReturnedQuestion;
+
 
     public Chapter(final Path path, final String name) {
         createChapter(path, name);
     }
 
     private Chapter() {
+        lastReturnedQuestion = null;
+        iterator = null;
         questionList = null;
         path = null;
         chapterName = null;
@@ -60,8 +73,7 @@ public class Chapter {
         chapterName = name;
     }
 
-    public void setActive(boolean active)
-    {
+    public void setActive(boolean active, final Path path) {
         Iterator iterator = questionList.iterator();
         while (iterator.hasNext()) {
             Question question = (Question) iterator.next();
@@ -72,33 +84,56 @@ public class Chapter {
         }
     }
 
+    public boolean isActive(Path questionPath)
+    {
+        Iterator iterator = questionList.iterator();
+        while (iterator.hasNext())
+        {
+            Question question = (Question) iterator.next();
+            if (question.getPath().equals(questionPath))
+            {
+                return question.isActive();
+            }
+        }
+        return false;
+    }
+
     public boolean setQuestionState(final Path path, final QuestionState state) {
         Iterator iterator = questionList.iterator();
         Question question = null;
+        QuestionState oldState = null;
         while (iterator.hasNext()) {
             question = (Question) iterator.next();
-            if (question.getPath().equals(path)) ;
-            break;
+            if (question.getPath().equals(path))
+            {
+                oldState = question.getState();
+                question.setState(state);
+                break;
+            }
         }
 
-        if (question == null)
+        if (oldState == null)
             return false;
 
-        if (state.correct())
-            correctAnsweredQuestions++;
-        if (state.inCorrect())
-            inCorrectAnsweredQuestions++;
-        question.setState(state);
+        if(!oldState.equals(state))
+        {
+            if (state.correct())
+                correctAnsweredQuestions++;
+            if (state.inCorrect())
+                inCorrectAnsweredQuestions++;
+            question.setState(state);
 
-        return true;
+            return true;
+        }
+
+        return false;
     }
 
     public String getName() {
         return chapterName;
     }
 
-    public Path getPath()
-    {
+    public Path getPath() {
         return path;
     }
 
@@ -114,9 +149,20 @@ public class Chapter {
         return correctAnsweredQuestions;
     }
 
-    public int getAnsweredQuestions()
-    {
+    public int getAnsweredQuestions() {
         return correctAnsweredQuestions + inCorrectAnsweredQuestions;
+    }
+
+    public QuestionState getQuestionState(Path questionPath)
+    {
+        Iterator iterator = questionList.iterator();
+        while (iterator.hasNext())
+        {
+            Question question = (Question) iterator.next();
+            if (question.getPath().equals(path))
+                return question.getState();
+        }
+        return null;
     }
 
     public Path addNewQuestion(final String questionText, final String answerText)
@@ -130,28 +176,81 @@ public class Chapter {
             question.setAnswerText(answerText);
             questionList.add(question);
             activeQuestionsNumber++;
+            if(lastReturnedQuestion != null)
+            {
+                int index = questionList.indexOf(lastReturnedQuestion) + 1;
+                iterator = questionList.listIterator(index);
+            }
             return question.getPath();
         }
         return null;
     }
 
-    public boolean removeQuestion(final Path path)
+    public QuestionState  removeQuestion(final Path path)
     {
-        Iterator iterator = questionList.iterator();
-        while (iterator.hasNext()) {
-            Question question = (Question) iterator.next();
+        Iterator tmpIterator = questionList.iterator();
+        QuestionState questionState = null;
+        while (tmpIterator.hasNext()) {
+            Question question = (Question) tmpIterator.next();
             if (question.getPath().equals(path))
             {
-                if(question.getState().inCorrect())
+                if (question.getState().inCorrect())
                     inCorrectAnsweredQuestions--;
-                if(question.getState().correct())
+                if (question.getState().correct())
                     correctAnsweredQuestions--;
-                iterator.remove();
-                activeQuestionsNumber--;
-                return true;
+                if(question.isActive())
+                    activeQuestionsNumber--;
+
+                questionState = question.getState();
+                question.removeQuestion();
+                tmpIterator.remove();
+
+                if(lastReturnedQuestion != null)
+                {
+                    int index = questionList.indexOf(lastReturnedQuestion) + 1;
+                    iterator = questionList.listIterator(index);
+                }
+
+                return questionState;
             }
         }
-        return false;
+        return null;
+    }
+
+    public Question nextQuestion() {
+        Question question = null;
+        if (iterator == null)
+            iterator = questionList.listIterator();
+        while (iterator.hasNext()) {
+            question = (Question) iterator.next();
+            if (question.isActive() && !question.getState().correct()
+                    && !question.getState().inCorrect())
+            {
+                lastReturnedQuestion = question;
+                return question;
+            }
+        }
+        return null;
+    }
+
+    public void reset()
+    {
+        iterator = null;
+    }
+
+    public void delete()
+    {
+        Iterator iterator = questionList.listIterator();
+        while (iterator.hasNext())
+        {
+            Question question = (Question) iterator.next();
+            question.removeQuestion();
+            iterator.remove();
+        }
+
+        File file = new File(path.toString());
+        if(file.exists())
+            file.delete();
     }
 
     public static Chapter readChapter(final Path path)
@@ -171,7 +270,8 @@ public class Chapter {
                 if(f.getName().length() >= "question".length())
                     if(f.getName().substring(0, "question".length()).equals("question"))
                     {
-                        Question newQuestion = Question.readQuestion(path);
+                        Path questionFilePath = Paths.get(path.toString() + File.separator + f.getName());
+                        Question newQuestion = Question.readQuestion(questionFilePath);
                         newChapter.addQuestion(newQuestion);
                     }
             }
@@ -182,7 +282,7 @@ public class Chapter {
 
     private void addQuestion(final Question question)
     {
-        if(!question.equals(null) && !question.getPath().equals(null))
+        if(question != null && !question.getPath().equals(null))
         {
             question.active(true);
             questionList.add(question);
@@ -196,7 +296,8 @@ public class Chapter {
             chapterName = name;
             questionList = new LinkedList<Question>();
             activeQuestionsNumber = 0;
-            File newDirectory = new File(path.toString() + File.separator + name);
+            this.path = Paths.get(path.toString() + File.separator + name);
+            File newDirectory = new File(this.path.toString());
             newDirectory.mkdir();
             return true;
         }

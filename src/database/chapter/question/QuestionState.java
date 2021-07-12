@@ -1,4 +1,4 @@
-package database;
+package database.chapter.question;
 
 public enum QuestionState
 {
@@ -18,6 +18,8 @@ public enum QuestionState
                 public boolean noAnswer() {
                     return false;
                 }
+
+                public String toString(){return  "☑";};
             },
 
     IN_CORRECT
@@ -36,6 +38,8 @@ public enum QuestionState
                 public boolean noAnswer() {
                     return false;
                 }
+
+                public String toString(){return  "☒";};
             },
 
     NO_ANSWER
@@ -54,9 +58,12 @@ public enum QuestionState
                 public boolean noAnswer() {
                     return true;
                 }
+
+                public String toString(){return  "☐";};
             };
 
     public abstract boolean correct();
     public abstract boolean inCorrect();
     public abstract boolean noAnswer();
+    public abstract String toString();
 }

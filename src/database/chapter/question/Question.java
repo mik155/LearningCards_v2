@@ -1,4 +1,4 @@
-package database;
+package database.chapter.question;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -140,7 +140,7 @@ public class Question
     public static Question readQuestion(final Path questionFilePath)
     {
         File file = new File(questionFilePath.toString());
-        File answerFile = new File(questionFilePath.toString() + File.separator + "_answer");
+        File answerFile = new File(questionFilePath.toString() + "_answer");
 
         if(!file.exists() || !file.isFile() || !answerFile.exists() || !answerFile.isFile())
             return null;
@@ -172,6 +172,11 @@ public class Question
     public void setState(QuestionState state)
     {
         this.state = state;
+    }
+
+    public String toString()
+    {
+        return "PATH:\n" + path.toString() + "\nQUESTION:\n" + question + "\nANSWER:\n" + answer;
     }
 
     private void clean()
