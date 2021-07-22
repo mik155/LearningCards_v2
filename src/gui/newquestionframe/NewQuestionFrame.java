@@ -1,9 +1,13 @@
 package gui.newquestionframe;
 
+import actionlisteners.newquestionframe.NewQuestionFrameListener;
 import gui.entryframe.EntryFrame;
+import gui.questionListFrame.QuestionPanel;
+import gui.settingsframe.ChapterPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Path;
 
 public class NewQuestionFrame extends JFrame
 {
@@ -16,6 +20,9 @@ public class NewQuestionFrame extends JFrame
     public static final int BOTTOM_MENU_WIDTH = EntryFrame.BOTTOM_MENU_WIDTH;
     public static final int BOTTOM_MENU_HEIGTH = EntryFrame.BOTTOM_MENU_HEIGTH;
 
+    public static NewQuestionFrame openedNewQuestionFrame = null;
+
+    private QuestionPanel questionPanel;
     private JButton okButton;
     private JButton cancelButton;
     private JScrollPane questionScrollPane;
@@ -23,9 +30,14 @@ public class NewQuestionFrame extends JFrame
     private JTextArea questionTextArea;
     private JTextArea answerTextArea;
 
+    private ChapterPanel chapterPanel;
 
-    public NewQuestionFrame()
+
+    public NewQuestionFrame(QuestionPanel qPanel, ChapterPanel cPanel)
     {
+        chapterPanel = cPanel;
+        questionPanel = qPanel;
+        openedNewQuestionFrame = this;
         setLocation(Utils.Utils.getCenterFramePoint(FRAME_WIDTH, FRAME_HEIGTH));
         add(Box.createRigidArea(new Dimension(0, 30)), BorderLayout.PAGE_START);
         add(getCenterMenu(), BorderLayout.CENTER);
@@ -35,8 +47,24 @@ public class NewQuestionFrame extends JFrame
 
         setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGTH));
         setMinimumSize(new Dimension(FRAME_WIDTH, FRAME_HEIGTH));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setActionListeners();
+
         setVisible(true);
+    }
+
+    public String getQuestionText()
+    {
+        return questionTextArea.getText();
+    }
+
+    public String getAnswerText()
+    {
+        return answerTextArea.getText();
+    }
+
+    public ChapterPanel getChapterPanel() {
+        return chapterPanel;
     }
 
     private JPanel getCenterMenu()
@@ -103,5 +131,11 @@ public class NewQuestionFrame extends JFrame
         panel.setMaximumSize(new Dimension(BOTTOM_MENU_WIDTH, BOTTOM_MENU_HEIGTH));
 
         return panel;
+    }
+
+    private void setActionListeners()
+    {
+        okButton.addActionListener(new NewQuestionFrameListener(questionPanel));
+        cancelButton.addActionListener(new NewQuestionFrameListener(questionPanel));
     }
 }

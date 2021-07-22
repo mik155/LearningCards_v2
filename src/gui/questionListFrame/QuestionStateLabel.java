@@ -31,11 +31,16 @@ public class QuestionStateLabel extends JPanel
         return "";
     }
 
+    public void setStateLabel(QuestionState questionState)
+    {
+        state = questionState;
+        label.setText(getLabelText());
+    }
+
     public String toString()
     {
         return getLabelText();
     }
-
 }
 
 

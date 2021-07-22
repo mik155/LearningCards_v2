@@ -1,6 +1,5 @@
 package questionlistframe;
 
-import database.chapter.question.Question;
 import database.chapter.question.QuestionState;
 import gui.questionListFrame.QuestionListFrame;
 import gui.questionListFrame.QuestionPanel;
@@ -11,11 +10,10 @@ public class QuestionListFrameTest
 {
     public static void main(String [] args)
     {
-        QuestionListFrame questionListFrame = new QuestionListFrame();
-        questionListFrame.addQuestionPanel(new QuestionPanel("Pytanie nr 1", Paths.get("")));
-        questionListFrame.addQuestionPanel(new QuestionPanel("Pytanie nr 2", Paths.get("")));
-        questionListFrame.addQuestionPanel(new QuestionPanel("Pytanie nr 3", Paths.get("")));
+        QuestionListFrame questionListFrame = new QuestionListFrame(null, null);
+        questionListFrame.addQuestionPanel(new QuestionPanel( Paths.get(""),Paths.get(""), "Pytanie nr 1", QuestionState.CORRECT, true));
+        questionListFrame.addQuestionPanel(new QuestionPanel( Paths.get(""),Paths.get(""), "Pytanie nr 2", QuestionState.CORRECT, true));
+        questionListFrame.addQuestionPanel(new QuestionPanel( Paths.get(""),Paths.get(""), "Pytanie nr 3", QuestionState.CORRECT, true));
 
-        questionListFrame.setVisible(true);
     }
 }

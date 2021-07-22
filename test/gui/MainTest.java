@@ -5,6 +5,7 @@ import database.Database;
 import database.Mode;
 import database.chapter.question.Question;
 import gui.entryframe.EntryFrame;
+import gui.entryframe.TEXT_AREA_DISPLAY;
 import org.junit.Before;
 
 import java.io.File;
@@ -20,16 +21,16 @@ public class MainTest
 
     public static void main(String [] args)
     {
-        setUp();
+        path = Paths.get("TestDirectory").toAbsolutePath();
         Database database = new Database(path, Mode.CREATE);
         Path cpath = database.addNewChapter("chapter_1");
+        Path cpath2 = database.addNewChapter("chapter_2");
         database.addNewQuestion(cpath, "Pytanie nr 1.", "Odpowiedz 1");
         database.addNewQuestion(cpath, "Pytanie nr 2.", "Odpowiedz 2");
         database.addNewQuestion(cpath, "Pytanie nr 3.", "Odpowiedz 3");
         EntryFrame entryFrame = new EntryFrame(database.getCorrectAnsweredQuestions(),
                 database.getInCorrectAnsweredQuestions(),
-                database.getActiveQuestionsNumber());
-        cleanUp();
+                database.getActiveQuestionsNumber(), database.nextQuestion().getQuestionText(), TEXT_AREA_DISPLAY.QUESTION);
     }
 
     private static void setUp() {

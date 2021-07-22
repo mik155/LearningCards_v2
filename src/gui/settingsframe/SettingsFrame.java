@@ -1,11 +1,15 @@
 package gui.settingsframe;
 
 import Utils.Utils;
+import actionlisteners.settingsframe.SettingsFrameListener;
+import actionlisteners.settingsframe.chapterlist.KeyBinding;
 import gui.Counter;
 import gui.entryframe.EntryFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.LinkedList;
 
 public class SettingsFrame extends JFrame
 {
@@ -21,37 +25,50 @@ public class SettingsFrame extends JFrame
     public static final int BOTTOM_MENU_WIDTH =  EntryFrame.FRAME_WIDTH;
     public static final int BOTTOM_MENU_HEIGTH = FRAME_HEIGTH - CHAPTER_LIST_HEIGTH;
 
-    private QuestionList chapterList;
+    public static final int BUTTON_WIDTH = EntryFrame.BUTTON_WIDTH;
+    public static final int BUTTON_HEIGTH = EntryFrame.BUTTON_HEIGTH;
+
+    public static SettingsFrame settingsFrame;
+
+    private ChapterList chapterList;
     private JScrollPane jScrollPane;
     private JPanel bottomPanel;
     private JButton addButton;
-    private JButton removeButton;
+    private JButton activeAllButton;
+    private JButton deactiveAllButton;
     private JButton resetCounterButton;
-    private JButton resetActButton;
 
-    public SettingsFrame()
+    public SettingsFrame(LinkedList chapterListRep)
     {
-        setjScrollPane();
+        settingsFrame = this;
+        setjScrollPane(chapterListRep);
         add(jScrollPane, BorderLayout.CENTER);
         setBottomPanel();
         add(bottomPanel, BorderLayout.PAGE_END);
 
+        chapterList.setBackground(Color.WHITE);
         setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGTH));
         setMinimumSize(new Dimension(FRAME_WIDTH, FRAME_HEIGTH));
         setResizable(false);
         setLocation(Utils.getCenterFramePoint(FRAME_WIDTH, FRAME_HEIGTH));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setActionListeners();
+        setVisible(true);
     }
 
     public void addChapterPanel(ChapterPanel chapterPanel)
     {
-        chapterList.add(chapterPanel);
-        jScrollPane.repaint();
+        chapterList.addChapterPanel(chapterPanel);
     }
 
-    private void setjScrollPane()
+    public void setChapterList(LinkedList representation)
     {
-        chapterList = new QuestionList();
+        chapterList.setChapterList(representation);
+    }
+
+    private void setjScrollPane(LinkedList chapterListRep)
+    {
+        chapterList = new ChapterList(chapterListRep);
         chapterList.setMinimumSize(new Dimension(CHAPTER_LIST_WIDTH, CHAPTER_LIST_HEIGTH));
 
         jScrollPane = new JScrollPane(chapterList);
@@ -67,50 +84,63 @@ public class SettingsFrame extends JFrame
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.LINE_AXIS));
         bottomPanel.setPreferredSize(new Dimension(BOTTOM_MENU_WIDTH, BOTTOM_MENU_HEIGTH));
 
-        bottomPanel.add(Box.createHorizontalGlue());
+        int spaceBetweenButtons = 30;
+        bottomPanel.add(Box.createRigidArea(new Dimension(20,0)));
         bottomPanel.add(addButton);
-        bottomPanel.add(Box.createHorizontalGlue());
-        bottomPanel.add(removeButton);
-        bottomPanel.add(Box.createHorizontalGlue());
+        bottomPanel.add(Box.createRigidArea(new Dimension(spaceBetweenButtons, 0)));
+        bottomPanel.add(activeAllButton);
+        bottomPanel.add(Box.createRigidArea(new Dimension(spaceBetweenButtons, 0)));
+        bottomPanel.add(deactiveAllButton);
+        bottomPanel.add(Box.createRigidArea(new Dimension(spaceBetweenButtons, 0)));
         bottomPanel.add(resetCounterButton);
-        bottomPanel.add(Box.createHorizontalGlue());
-        bottomPanel.add(resetActButton);
         bottomPanel.add(Box.createHorizontalGlue());
     }
 
     private void setButtons()
     {
         addButton = new JButton("+");
-        removeButton = new JButton("-");
-        Counter counter = new Counter(0,0,0);
-        resetCounterButton = new JButton(counter.toString());
-        resetActButton = new JButton("RESET");
+        activeAllButton = new JButton("☒");
+        deactiveAllButton = new JButton("☐");
+        String resetButtonText = "<html>";
+        resetButtonText += "<font color='green'>" + "☑" + "</font> " + 0;
+        resetButtonText += "<font color='red'>" + "  ☒" + "</font> " + 0;
+        resetButtonText += "</html>";
+         resetCounterButton = new JButton(resetButtonText);
 
-        stylyzeSettingsButton(addButton);
-        stylyzeSettingsButton(removeButton);
-        stylyzeSettingsButton(resetCounterButton);
-        stylyzeSettingsButton(resetActButton);
-        resetCounterButton.setFont(new Font(resetActButton.getFont().getName(), Font.PLAIN, 10));
+        stylyzeSettingsBottomMenuButton(addButton);
+        stylyzeSettingsBottomMenuButton(activeAllButton);
+        stylyzeSettingsBottomMenuButton(deactiveAllButton);
+        stylyzeSettingsBottomMenuButton(resetCounterButton);
+        resetCounterButton.setFont(new Font(resetCounterButton.getName(), Font.PLAIN, 10));
 
-        addButton.setPreferredSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
-        addButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
+        addButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGTH));
+        addButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGTH));
 
-        removeButton.setPreferredSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
-        removeButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
+        activeAllButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGTH));
+        activeAllButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, BUTTON_HEIGTH));
 
-        resetCounterButton.setPreferredSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
-        resetCounterButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
+        deactiveAllButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGTH));
+        deactiveAllButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, BUTTON_HEIGTH));
 
-        resetActButton.setPreferredSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
-        resetActButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
-
+        resetCounterButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGTH));
+        resetCounterButton.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGTH));
     }
 
-    public static void stylyzeSettingsButton(final JButton button)
+    public static void stylyzeSettingsBottomMenuButton(final JButton button)
     {
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);
-        button.setFont(new Font(button.getFont().getName(), Font.PLAIN, 15));
+        button.setFont(new Font(button.getFont().getName(), Font.PLAIN, 25));
     }
 
+    private void setActionListeners()
+    {
+        addButton.addActionListener(new SettingsFrameListener(chapterList));
+        activeAllButton.addActionListener(new SettingsFrameListener(chapterList));
+        deactiveAllButton.addActionListener(new SettingsFrameListener(chapterList));
+        resetCounterButton.addActionListener(new SettingsFrameListener(chapterList));
+
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke((char) KeyEvent.VK_DELETE), "PRESSED DELETE");
+        getRootPane().getActionMap().put("PRESSED DELETE", new KeyBinding(chapterList));
+    }
 }

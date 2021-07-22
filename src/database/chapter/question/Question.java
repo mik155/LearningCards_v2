@@ -95,6 +95,8 @@ public class Question
 
     public void active(boolean b)
     {
+        if(isActive == true && b == false)
+            setState(QuestionState.NO_ANSWER);
         isActive = b;
     }
 
@@ -174,6 +176,12 @@ public class Question
         this.state = state;
     }
 
+    public QuestionRepresentation getRepresentation()
+    {
+        QuestionRepresentation questionRepresentation = new QuestionRepresentation(path, isActive, state, getQuestionText());
+        return questionRepresentation;
+    }
+
     public String toString()
     {
         return "PATH:\n" + path.toString() + "\nQUESTION:\n" + question + "\nANSWER:\n" + answer;
@@ -191,6 +199,30 @@ public class Question
         answer = null;
         question = null;
         isActive = false;
+    }
+
+    public boolean update(String questionText, String answerText)
+    {
+        try
+        {
+            FileWriter fileWriter = new FileWriter(path.toString());
+            FileWriter fileWriterA = new FileWriter(path.toString() + "_answer");
+
+            fileWriter.write(questionText);
+            fileWriterA.write(answerText);
+
+            fileWriter.close();
+            fileWriterA.close();
+
+            question = questionText;
+            answer = answerText;
+
+            return true;
+        }
+        catch (IOException exception)
+        {
+            return false;
+        }
     }
 
     private boolean createQuestion(final Path path, final String name)

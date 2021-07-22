@@ -10,7 +10,7 @@ public class SettingsFrameTest
 {
     public static void main(String [] args)
     {
-        SettingsFrame settingsFrame = new SettingsFrame();
+        SettingsFrame settingsFrame = new SettingsFrame(null);
         settingsFrame.setVisible(true);
         settingsFrame.addChapterPanel(new ChapterPanel("chapter_1" ,  Paths.get(""), 0 ,0 ,0));
         settingsFrame.addChapterPanel(new ChapterPanel("chapter_2" ,  Paths.get(""), 0 ,0 ,0));

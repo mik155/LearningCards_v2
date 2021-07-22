@@ -65,5 +65,4 @@ public enum QuestionState
     public abstract boolean correct();
     public abstract boolean inCorrect();
     public abstract boolean noAnswer();
-    public abstract String toString();
 }

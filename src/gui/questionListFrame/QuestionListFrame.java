@@ -1,13 +1,17 @@
 package gui.questionListFrame;
 
 import Utils.Utils;
-import database.chapter.question.QuestionState;
-import gui.Counter;
+import actionlisteners.questionlistframe.QuestionListFrameListener;
+import actionlisteners.questionlistframe.KeyBinding;
 import gui.entryframe.EntryFrame;
-import gui.settingsframe.QuestionList;
+import gui.settingsframe.ChapterPanel;
+import gui.settingsframe.SettingsFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.nio.file.Path;
+import java.util.LinkedList;
 
 public class QuestionListFrame extends JFrame
 {
@@ -23,17 +27,23 @@ public class QuestionListFrame extends JFrame
     public static final int BOTTOM_MENU_WIDTH =  EntryFrame.FRAME_WIDTH;
     public static final int BOTTOM_MENU_HEIGTH = FRAME_HEIGTH - QUESTION_LIST_HEIGTH;
 
+    public static QuestionListFrame openedQuestionListFrame;
+
     private QuestionList questionList;
     private JScrollPane jScrollPane;
     private JPanel bottomPanel;
-    private JButton addButton;
-    private JButton removeButton;
-    private JButton resetCounterButton;
-    private JButton resetActButton;
+    private JButton addNewQuestionButton;
+    private JButton setAllActiveButton;
+    private JButton setAllNotActiveButton;
+    private JButton resetAnswerButton;
 
-    public QuestionListFrame()
+    private ChapterPanel chapterPanel;
+
+    public QuestionListFrame(ChapterPanel cPanel, LinkedList chapterListRep)
     {
-        setjScrollPane();
+        openedQuestionListFrame = this;
+        chapterPanel = cPanel;
+        setjScrollPane(chapterListRep);
         add(jScrollPane, BorderLayout.CENTER);
         setBottomPanel();
         add(bottomPanel, BorderLayout.PAGE_END);
@@ -42,18 +52,30 @@ public class QuestionListFrame extends JFrame
         setMinimumSize(new Dimension(FRAME_WIDTH, FRAME_HEIGTH));
         setResizable(false);
         setLocation(Utils.getCenterFramePoint(FRAME_WIDTH, FRAME_HEIGTH));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setActionListeners();
+        setVisible(true);
     }
+
+    public void setQuestionList(LinkedList representation)
+    {
+        questionList.setQuestionList(representation);
+    }
+
 
     public void addQuestionPanel(QuestionPanel questionPanel)
     {
-        questionList.add(questionPanel);
-        jScrollPane.repaint();
+        questionList.addQuestionPanel(questionPanel);
     }
 
-    private void setjScrollPane()
+    public Path getChapterPath()
     {
-        questionList = new QuestionList();
+        return chapterPanel.getPath();
+    }
+
+    private void setjScrollPane(LinkedList chapterListRep)
+    {
+        questionList = new QuestionList(chapterListRep);
         questionList.setMinimumSize(new Dimension(QUESTION_LIST_WIDTH, QUESTION_LIST_HEIGTH));
 
         jScrollPane = new JScrollPane(questionList);
@@ -70,49 +92,51 @@ public class QuestionListFrame extends JFrame
         bottomPanel.setPreferredSize(new Dimension(BOTTOM_MENU_WIDTH, BOTTOM_MENU_HEIGTH));
 
         bottomPanel.add(Box.createHorizontalGlue());
-        bottomPanel.add(addButton);
+        bottomPanel.add(addNewQuestionButton);
         bottomPanel.add(Box.createHorizontalGlue());
-        bottomPanel.add(removeButton);
+        bottomPanel.add(setAllActiveButton);
         bottomPanel.add(Box.createHorizontalGlue());
-        bottomPanel.add(resetCounterButton);
+        bottomPanel.add(setAllNotActiveButton);
         bottomPanel.add(Box.createHorizontalGlue());
-        bottomPanel.add(resetActButton);
+        bottomPanel.add(resetAnswerButton);;
         bottomPanel.add(Box.createHorizontalGlue());
     }
 
     private void setButtons()
     {
-        addButton = new JButton("+");
-        removeButton = new JButton("-");
-        Counter counter = new Counter(0,0,0);
-        resetCounterButton = new JButton("<html><font color='blue' size='5'>" + "☐" + "</font></html>");
-        resetActButton = new JButton("RESET");
+        addNewQuestionButton = new JButton("+");
+        setAllActiveButton = new JButton("☒");
+        setAllNotActiveButton = new JButton("☐");
+        resetAnswerButton = new JButton("<html><font color='blue'>" + "☐" + "</font></html>");
 
-        stylyzeSettingsButton(addButton);
-        stylyzeSettingsButton(removeButton);
-        stylyzeSettingsButton(resetCounterButton);
-        stylyzeSettingsButton(resetActButton);
-        resetCounterButton.setFont(new Font(resetActButton.getFont().getName(), Font.PLAIN, 10));
 
-        addButton.setPreferredSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
-        addButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
+        SettingsFrame.stylyzeSettingsBottomMenuButton(addNewQuestionButton);
+        SettingsFrame.stylyzeSettingsBottomMenuButton(setAllActiveButton);
+        SettingsFrame.stylyzeSettingsBottomMenuButton(setAllNotActiveButton);
+        SettingsFrame.stylyzeSettingsBottomMenuButton(resetAnswerButton);
 
-        removeButton.setPreferredSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
-        removeButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
+        addNewQuestionButton.setPreferredSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
+        addNewQuestionButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
 
-        resetCounterButton.setPreferredSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
-        resetCounterButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
+        setAllActiveButton.setPreferredSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
+        setAllActiveButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
 
-        resetActButton.setPreferredSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
-        resetActButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
+        setAllNotActiveButton.setPreferredSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
+        setAllNotActiveButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
 
+        resetAnswerButton.setPreferredSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
+        resetAnswerButton.setMaximumSize(new Dimension(EntryFrame.BUTTON_WIDTH, EntryFrame.BUTTON_HEIGTH));
     }
 
-    public static void stylyzeSettingsButton(final JButton button)
+    private void setActionListeners()
     {
-        button.setContentAreaFilled(false);
-        button.setFocusPainted(false);
-        button.setFont(new Font(button.getFont().getName(), Font.PLAIN, 15));
+        addNewQuestionButton.addActionListener(new QuestionListFrameListener(questionList, chapterPanel));
+        setAllActiveButton.addActionListener(new QuestionListFrameListener(questionList, chapterPanel));
+        setAllNotActiveButton.addActionListener(new QuestionListFrameListener(questionList, chapterPanel));
+        resetAnswerButton.addActionListener(new QuestionListFrameListener(questionList, chapterPanel));
+
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke((char) KeyEvent.VK_DELETE), "PRESSED DELETE");
+        getRootPane().getActionMap().put("PRESSED DELETE", new KeyBinding(chapterPanel, questionList));
     }
 
 }

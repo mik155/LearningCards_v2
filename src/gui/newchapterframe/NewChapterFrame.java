@@ -1,6 +1,8 @@
 package gui.newchapterframe;
 
+import actionlisteners.newchapterframe.NewChapterFrameListener;
 import gui.entryframe.EntryFrame;
+import java.nio.file.Path;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +28,6 @@ public class NewChapterFrame extends JFrame
 
     public NewChapterFrame()
     {
-
         setTextArea();
         add(getLabel(), BorderLayout.PAGE_START);
         add(textArea, BorderLayout.CENTER);
@@ -36,7 +37,18 @@ public class NewChapterFrame extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGTH));
         setMinimumSize(new Dimension(FRAME_WIDTH, FRAME_HEIGTH));
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setActionListeners();
         setVisible(true);
+    }
+
+    /**
+     * Returns String from textArea
+     * @return  String representing name of new Chapter
+     * */
+    public String getText()
+    {
+        return textArea.getText();
     }
 
     private JPanel getLabel()
@@ -84,7 +96,13 @@ public class NewChapterFrame extends JFrame
         return bottomMenu;
     }
 
-    public  static void stylyzeButton(final JButton button)
+    private void setActionListeners()
+    {
+        okButton.addActionListener(new NewChapterFrameListener(this));
+        cancelButton.addActionListener(new NewChapterFrameListener(this));
+    }
+
+    private   static void stylyzeButton(final JButton button)
     {
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);

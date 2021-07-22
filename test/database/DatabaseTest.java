@@ -32,6 +32,7 @@ public class DatabaseTest
         assertTrue(directory.mkdir());
     }
 
+    //PUBLIC METHODS
     @Test
     public void initDatabaseCREATE()
     {
@@ -359,6 +360,7 @@ public class DatabaseTest
         assertEquals(database.getActiveQuestionsNumber(), 6);
     }
 
+    //nextQuestion() tests
     @Test
     public void nextAllActiveLastNotEmpty()
     {
@@ -582,6 +584,363 @@ public class DatabaseTest
 
         question = database.nextQuestion();
         assertEquals("1", question.getQuestionText());
+    }
+
+    //prevQuestion() tests
+    @Test
+    public void prevAllActiveLastNotEmpty()
+    {
+        Database database = new Database(path, Mode.CREATE);
+        Path cPath1 = database.addNewChapter("chapter_1");
+        database.addNewQuestion(cPath1, "4", "1");
+        database.addNewQuestion(cPath1, "3", "1");
+        database.addNewQuestion(cPath1, "2", "1");
+
+        database.addNewChapter("Empty chapter");
+
+        Path cPath2 = database.addNewChapter("chapter_2");
+        database.addNewQuestion(cPath2, "1", "1");
+        database.addNewQuestion(cPath2, "0", "1");
+
+
+        for(int i = 0; i < 5 ; i++)
+        {
+            Question question = database.previousQuestion();
+            String text = question.getQuestionText();
+            assertEquals(Integer.toString(i), text);
+        }
+
+        for(int i = 0; i < 5; i++)
+        {
+            Question question = database.previousQuestion();
+            String text = question.getQuestionText();
+            assertEquals(Integer.toString(i), text);
+        }
+    }
+
+    @Test
+    public void prevAllActiveLastEmpty()
+    {
+        Database database = new Database(path, Mode.CREATE);
+        Path cPath1 = database.addNewChapter("chapter_1");
+        database.addNewQuestion(cPath1, "4", "1");
+        database.addNewQuestion(cPath1, "3", "1");
+        database.addNewQuestion(cPath1, "2", "1");
+
+        database.addNewChapter("Empty_chapter");
+
+        Path cPath2 = database.addNewChapter("chapter_2");
+        database.addNewQuestion(cPath2, "1", "1");
+        database.addNewQuestion(cPath2, "0", "1");
+
+        database.addNewChapter("Empty_chapter_2");
+
+        for(int i = 0; i < 5 ; i++)
+        {
+            Question question = database.previousQuestion();
+            String text = question.getQuestionText();
+            assertEquals(Integer.toString(i), text);
+        }
+
+        for(int i = 0; i < 5; i++)
+        {
+            Question question = database.previousQuestion();
+            String text = question.getQuestionText();
+            assertEquals(Integer.toString(i), text);
+        }
+    }
+
+    @Test
+    public void prevAllActiveAnswered()
+    {
+        Database database = new Database(path, Mode.CREATE);
+        boolean [] notAnswered = {true, true, false, false ,true, false};
+        prevAllActiveCorrectAnsweredTest(notAnswered, database);
+        cleanUp();
+        setUp();
+
+        database = new Database(path, Mode.CREATE);
+        boolean [] notAnswered1 = {false, true, false, false ,true, true};
+        prevAllActiveCorrectAnsweredTest(notAnswered1, database);
+        cleanUp();
+        setUp();
+
+        database = new Database(path, Mode.CREATE);
+        boolean [] notAnswered2 = {false, true, false, false ,true, false};
+        prevAllActiveCorrectAnsweredTest(notAnswered2, database);
+        cleanUp();
+        setUp();
+
+        database = new Database(path, Mode.CREATE);
+        boolean [] notAnswered3 = {false, false, false, false ,false, false};
+        prevAllActiveCorrectAnsweredTest(notAnswered3, database);
+        cleanUp();
+        setUp();
+
+        database = new Database(path, Mode.CREATE);
+        boolean [] notAnswered4 = {true, true, true, true ,true, true};
+        prevAllActiveCorrectAnsweredTest(notAnswered4, database);
+        cleanUp();
+        setUp();
+
+        database = new Database(path, Mode.CREATE);
+        boolean [] notAnswered5 = {false};
+        prevAllActiveCorrectAnsweredTest(notAnswered5, database);
+        cleanUp();
+        setUp();
+
+        database = new Database(path, Mode.CREATE);
+        boolean [] notAnswered6 = {true};
+        prevAllActiveCorrectAnsweredTest(notAnswered6, database);
+        cleanUp();
+        setUp();
+    }
+
+    private void prevAllActiveCorrectAnsweredTest(boolean [] notAnswered, Database database)
+    {
+        Path cPath = database.addNewChapter("chapter_1");
+        int len = notAnswered.length;
+        for(int i = 0; i < len; i++)
+        {
+            Path qPath = database.addNewQuestion(cPath, Integer.toString(i), Integer.toString(i));
+            if(!notAnswered[i])
+                database.setQuestionState(cPath, qPath, QuestionState.CORRECT);
+        }
+
+        for(int i = len - 1 ; i >= 0; i--)
+        {
+            if(notAnswered[i])
+            {
+                Question question = database.previousQuestion();
+                assertEquals(question.getAnswerText(), Integer.toString(i));
+            }
+        }
+
+        for(int i = len - 1 ; i >= 0; i--)
+        {
+            if(notAnswered[i])
+            {
+                Question question = database.previousQuestion();
+                assertEquals(question.getAnswerText(), Integer.toString(i));
+            }
+        }
+    }
+
+    @Test
+    public void addNewQuestion_prev_mixed_0()
+    {
+        Database database = new Database(path, Mode.CREATE);
+        Path cPath = database.addNewChapter("chapter1");
+        database.addNewQuestion(cPath, "0", "0");
+        database.addNewQuestion(cPath, "1", "0");
+        database.addNewQuestion(cPath, "2", "0");
+
+        Question question = database.previousQuestion();
+        assertEquals("2", question.getQuestionText());
+        database.addNewQuestion(cPath, "3", "0"); // 0 1 2 3
+        question = database.previousQuestion();
+        assertEquals("1", question.getQuestionText());
+        question = database.previousQuestion();
+        assertEquals("0", question.getQuestionText());
+        question = database.previousQuestion();
+        assertEquals("3", question.getQuestionText());
+        question = database.previousQuestion();
+        assertEquals("2", question.getQuestionText());
+    }
+
+    @Test
+    public void removeQuestion_prev_mixed_0()
+    {
+        Database database = new Database(path, Mode.CREATE);
+        Path cPath = database.addNewChapter("chpater_1");
+        Path qPAth1 = database.addNewQuestion(cPath, "0", "1");
+        Path qPAth2 = database.addNewQuestion(cPath, "1", "1");
+        Path qPAth3 = database.addNewQuestion(cPath, "2", "1");
+
+        Question question = database.previousQuestion();
+        assertEquals("2", question.getQuestionText());
+        database.removeQuestion(cPath, qPAth1);
+
+        question = database.previousQuestion();
+        assertEquals("1", question.getQuestionText());
+
+        question = database.previousQuestion();
+        assertEquals("2", question.getQuestionText());
+
+        question = database.previousQuestion();
+        assertEquals("1", question.getQuestionText());
+
+        question = database.previousQuestion();
+        assertEquals("2", question.getQuestionText());
+
+        database.removeQuestion(cPath, qPAth3);
+
+        question = database.previousQuestion();
+        assertEquals("1", question.getQuestionText());
+
+        question = database.previousQuestion();
+        assertEquals("1", question.getQuestionText());
+
+        database.removeQuestion(cPath, qPAth2);
+        assertNull(database.previousQuestion());
+    }
+
+    @Test
+    public void removeQuestion_addNewQuestion_prev_mixed_0()
+    {
+        Database database = new Database(path, Mode.CREATE);
+        assertNull(database.nextQuestion());
+        Path cPath =  database.addNewChapter("chapter_1");
+        Path qPath1 = database.addNewQuestion(cPath, "1", "-");
+        Path qPath2 = database.addNewQuestion(cPath, "4", "-");
+        Path qPath3 = database.addNewQuestion(cPath, "2", "-");
+
+        database.removeQuestion(cPath,qPath2);
+        database.addNewQuestion(cPath, "3", "-");
+
+        Question question;
+
+        question = database.previousQuestion();
+        assertEquals("3", question.getQuestionText());
+
+        question = database.previousQuestion();
+        assertEquals("2", question.getQuestionText());
+
+        question = database.previousQuestion();
+        assertEquals("1", question.getQuestionText());
+
+        question = database.previousQuestion();
+        assertEquals("3", question.getQuestionText());
+    }
+
+    @Test
+    public void next_prev_mixed_0()
+    {
+        Database database = new Database(path, Mode.CREATE);
+        Path cPath = database.addNewChapter("chapter");
+        database.addNewQuestion(cPath, "0", "-");
+        database.addNewQuestion(cPath, "1", "-");
+        database.addNewQuestion(cPath, "2", "-");
+        database.addNewQuestion(cPath, "3", "-");
+        database.addNewQuestion(cPath, "4", "-");
+
+        assertEquals("0", database.nextQuestion().getQuestionText());
+        assertEquals("1", database.nextQuestion().getQuestionText());
+        assertEquals("2", database.nextQuestion().getQuestionText());
+        assertEquals("3", database.nextQuestion().getQuestionText());
+        assertEquals("2", database.previousQuestion().getQuestionText());
+        assertEquals("1", database.previousQuestion().getQuestionText());
+        assertEquals("0", database.previousQuestion().getQuestionText());
+        assertEquals("4", database.previousQuestion().getQuestionText());
+        assertEquals("0", database.nextQuestion().getQuestionText());
+        assertEquals("1", database.nextQuestion().getQuestionText());
+    }
+
+    @Test
+    public void next_prev_mixed_1()
+    {
+        Database database = new Database(path, Mode.CREATE);
+        Path cPath1 = database.addNewChapter("chapter");
+        database.addNewQuestion(cPath1, "0", "-");
+        database.addNewQuestion(cPath1, "1", "-");
+        database.addNewQuestion(cPath1, "2", "-");
+
+        database.addNewChapter("Empty chapter");
+
+        Path cPath2 = database.addNewChapter("chapter_2");
+        database.addNewQuestion(cPath2, "3", "-");
+        database.addNewQuestion(cPath2, "4", "-");
+        //0 1 2 | 3 4 |
+        assertEquals("0", database.nextQuestion().getQuestionText());
+        assertEquals("1", database.nextQuestion().getQuestionText());
+        assertEquals("2", database.nextQuestion().getQuestionText());
+        assertEquals("3", database.nextQuestion().getQuestionText());
+
+        assertEquals("2", database.previousQuestion().getQuestionText());
+        assertEquals("1", database.previousQuestion().getQuestionText());
+        assertEquals("0", database.previousQuestion().getQuestionText());
+        assertEquals("4", database.previousQuestion().getQuestionText());
+        assertEquals("0", database.nextQuestion().getQuestionText());
+        assertEquals("1", database.nextQuestion().getQuestionText());
+    }
+
+    @Test
+    public void next_prev_mixed_2()
+    {
+        Database database = new Database(path, Mode.CREATE);
+        Path cPath1 = database.addNewChapter("chapter");
+        database.addNewQuestion(cPath1, "0", "-");
+        database.addNewQuestion(cPath1, "1", "-");
+        database.addNewQuestion(cPath1, "2", "-");
+
+        database.addNewChapter("Empty chapter");
+
+        Path cPath2 = database.addNewChapter("chapter_2");
+        database.addNewQuestion(cPath2, "3", "-");
+        database.addNewQuestion(cPath2, "4", "-");
+
+        assertEquals("0", database.nextQuestion().getQuestionText());
+        assertEquals("1", database.nextQuestion().getQuestionText());
+        assertEquals("2", database.nextQuestion().getQuestionText());
+        assertEquals("3", database.nextQuestion().getQuestionText());
+        assertEquals("2", database.previousQuestion().getQuestionText());
+        assertEquals("1", database.previousQuestion().getQuestionText());
+        assertEquals("0", database.previousQuestion().getQuestionText());
+        assertEquals("4", database.previousQuestion().getQuestionText());
+        assertEquals("0", database.nextQuestion().getQuestionText());
+        assertEquals("1", database.nextQuestion().getQuestionText());
+
+        database.addNewChapter("Empty chapter 2");
+    }
+
+    @Test
+    public void next_prev_addNewQuestion_removeQuestion_mixed()
+    {
+        Database database = new Database(path, Mode.CREATE);
+        Path cPath1 = database.addNewChapter("chapter");
+        Path cPath2 = database.addNewChapter("chapter 2");
+        Path cPath3 = database.addNewChapter("chapter 3");
+
+        database.addNewQuestion(cPath1, "0", "-");
+        Path qPath1 = database.addNewQuestion(cPath1, "1", "-");
+        database.addNewQuestion(cPath1, "2", "-");
+        Path qPath3 = database.addNewQuestion(cPath1, "3", "-");
+
+        database.addNewQuestion(cPath2, "4", "-");
+        Path qPAth5 =  database.addNewQuestion(cPath2, "5", "-");
+        database.addNewQuestion(cPath2, "6", "-");
+
+        database.addNewQuestion(cPath3, "7", "-");
+        //0 1 2 3 |4 5 6| 7
+        assertEquals("0", database.nextQuestion().getQuestionText());
+        assertEquals("1", database.nextQuestion().getQuestionText());
+        assertEquals("2", database.nextQuestion().getQuestionText());
+        assertEquals("3", database.nextQuestion().getQuestionText());
+        database.removeQuestion(cPath1, qPath1); //0 2 3 |4 5 6| 7
+        assertEquals("2", database.previousQuestion().getQuestionText());
+        assertEquals("0", database.previousQuestion().getQuestionText());
+        database.removeQuestion(cPath1, qPath3); // 0 2 |4 5 6| 7
+        assertEquals("2", database.nextQuestion().getQuestionText());
+        database.removeQuestion(cPath2, qPAth5);// 0 2 |4 6| 7
+        assertEquals("4", database.nextQuestion().getQuestionText());
+        assertEquals("6", database.nextQuestion().getQuestionText());
+        assertEquals("7", database.nextQuestion().getQuestionText());
+        assertEquals("6", database.previousQuestion().getQuestionText());
+        assertEquals("4", database.previousQuestion().getQuestionText());
+        database.addNewQuestion(cPath1, "10", "-");//0 2 10|4 6| 7
+        database.addNewQuestion(cPath1, "20", "-");//0 2 10 20|4 6| 7
+        assertEquals("20", database.previousQuestion().getQuestionText());
+        assertEquals("10", database.previousQuestion().getQuestionText());
+        assertEquals("2", database.previousQuestion().getQuestionText());
+        assertEquals("0", database.previousQuestion().getQuestionText());
+        assertEquals("7", database.previousQuestion().getQuestionText());
+        assertEquals("6", database.previousQuestion().getQuestionText());
+        assertEquals("4", database.previousQuestion().getQuestionText());
+        assertEquals("20", database.previousQuestion().getQuestionText());
+        assertEquals("10", database.previousQuestion().getQuestionText());
+        assertEquals("2", database.previousQuestion().getQuestionText());
+        assertEquals("10", database.nextQuestion().getQuestionText());
+
     }
 
     @After

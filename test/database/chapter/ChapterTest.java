@@ -259,7 +259,7 @@ public class ChapterTest {
             i++;
         }
 
-        chapter.reset();
+        chapter.setIteratorAtZeroPosition();
 
         i = 0;
         while (true)
@@ -290,7 +290,7 @@ public class ChapterTest {
             Question newQuestion = chapter1.nextQuestion();
             if(newQuestion == null)
             {
-                chapter1.reset();
+                chapter1.setIteratorAtZeroPosition();
                 break;
             }
 
@@ -303,7 +303,7 @@ public class ChapterTest {
             Question newQuestion = chapter2.nextQuestion();
             if(newQuestion == null)
             {
-                chapter2.reset();
+                chapter2.setIteratorAtZeroPosition();
                 break;
             }
 
