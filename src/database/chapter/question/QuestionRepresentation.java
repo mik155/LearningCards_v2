@@ -8,27 +8,40 @@ public class QuestionRepresentation
     private Path chapterPath;
     private boolean isActive;
     private QuestionState questionState;
-    private String description;
+    private String questionText;
+    private String answerText;
 
-    public QuestionRepresentation(Path questionPath, Path chapterPath, boolean isActive, QuestionState questionState, String description) {
-        this.questionPath = questionPath;
-        this.chapterPath = chapterPath;
-        this.isActive = isActive;
-        this.questionState = questionState;
-        this.description = description;
-    }
-
-    public QuestionRepresentation(Path questionPath, boolean isActive, QuestionState questionState, String description) {
+    /**
+     * Constructor method.
+     * @param questionPath path of question
+     * @param isActive activeState of question
+     * @param questionState state of question
+     * @param questionText text of question
+     * @param answerText text of answer
+     * */
+    public QuestionRepresentation(Path questionPath, boolean isActive, QuestionState questionState, String questionText, String answerText)
+    {
         this.questionPath = questionPath;
         this.chapterPath = null;
         this.isActive = isActive;
         this.questionState = questionState;
-        this.description = description;
+        this.questionText = questionText;
+        this.answerText = answerText;
     }
 
-    public void setQuestionPath(Path path) {
+    /**
+     * Sets path of question
+     * @param path path of question
+     * */
+    public void setQuestionPath(Path path)
+    {
         this.questionPath = path;
     }
+
+    /**
+     * Sets chapter path.
+     * @param path path of chapter
+     * */
     public void setChapterPath(Path path) {
         this.chapterPath = path;
     }
@@ -37,16 +50,32 @@ public class QuestionRepresentation
         isActive = active;
     }
 
+    /**
+     * Sets question stata.
+     * @param questionState state of question
+     * */
     public void setQuestionState(QuestionState questionState) {
         this.questionState = questionState;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    /**
+     * Sets question description.
+     * @param questionText text of question
+     * */
+    public void setQuestionText(String questionText) {
+        this.questionText = questionText;
     }
 
-    public String getDescription() {
-        return description;
+    public String getAnswerText() {
+        return answerText;
+    }
+
+    public void setAnswerText(String answerText) {
+        this.answerText = answerText;
+    }
+
+    public String getQuestionText() {
+        return questionText;
     }
 
     public Path getQuestionPath() {

@@ -8,7 +8,7 @@ import java.awt.*;
 public class QuestionStateLabel extends JPanel
 {
     private QuestionState state;
-    private JLabel label;
+    final private JLabel label;
 
     public QuestionStateLabel(QuestionState questionState)
     {

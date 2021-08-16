@@ -20,7 +20,7 @@ public class Utils {
 
     public static boolean ifContainsFile(final Path directoryPath, final String fileName) {
         File directory = new File(directoryPath.toString());
-        if (directory != null && directory.isDirectory()) {
+        if (directory.isDirectory()) {
             File[] files = directory.listFiles();
             for (File f : files)
                 if (f.getName().equals(fileName))
@@ -40,10 +40,10 @@ public class Utils {
             try
             {
                 Scanner scanner = new Scanner(file);
-                String output = "";
+                StringBuilder stringBuilder = new StringBuilder();
                 while (scanner.hasNext())
-                    output += scanner.nextLine();
-                return output;
+                    stringBuilder.append(scanner.nextLine());
+                return stringBuilder.toString();
             }
             catch (IOException e)
             {
@@ -79,6 +79,6 @@ public class Utils {
 
     private static String nameGenerator(final String segment, int number)
     {
-        return segment + Integer.toString(number);
+        return segment + number;
     }
 }

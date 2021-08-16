@@ -6,8 +6,7 @@ import gui.entryframe.EntryFrame;
 import gui.newquestionframe.NewQuestionFrame;
 import gui.questionListFrame.QuestionListFrame;
 import gui.questionListFrame.QuestionPanel;
-import gui.settingsframe.ChapterPanel;
-
+import gui.settingsframe.SettingsFrame;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,8 +15,7 @@ import java.nio.file.Path;
 public class NewQuestionFrameListener implements ActionListener
 {
     private static final Database database = Database.database;
-    private QuestionPanel clickedPanel = null;
-    private NewQuestionFrame newQuestionFrame = null;
+    final private QuestionPanel clickedPanel;
 
     public NewQuestionFrameListener(QuestionPanel qPanel)
     {
@@ -33,7 +31,7 @@ public class NewQuestionFrameListener implements ActionListener
             JButton clickedButton = (JButton) object;
             if(clickedButton.getText().equals("OK"))
             {
-                newQuestionFrame = NewQuestionFrame.openedNewQuestionFrame;
+                NewQuestionFrame newQuestionFrame = NewQuestionFrame.openedNewQuestionFrame;
                 String questionText = newQuestionFrame.getQuestionText();
                 String answerText = newQuestionFrame.getAnswerText();
                 if(clickedPanel != null)
@@ -46,13 +44,14 @@ public class NewQuestionFrameListener implements ActionListener
                 }
                 else
                 {
-                    Path qPath = null;
+                    Path qPath;
                     Path cPath = newQuestionFrame.getChapterPanel().getPath();
                     qPath = database.addNewQuestion(cPath, questionText, answerText);
                     QuestionPanel qPanel = new QuestionPanel(qPath, cPath,questionText,
                             QuestionState.NO_ANSWER,true);
                     QuestionListFrame.openedQuestionListFrame.addQuestionPanel(qPanel);
-                    newQuestionFrame.getChapterPanel().update(Database.database.getChapterRepresentation(cPath));
+                    if(SettingsFrame.settingsFrame != null && SettingsFrame.settingsFrame .isVisible())
+                        SettingsFrame.settingsFrame.setChapterList(database.getChapterListRepresentation());
                     EntryFrame.entryFrame.update();
                 }
 

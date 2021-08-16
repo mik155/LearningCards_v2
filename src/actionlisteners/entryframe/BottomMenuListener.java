@@ -1,10 +1,13 @@
 package actionlisteners.entryframe;
 
+import actionlisteners.settingsframe.chapterlist.ChapterPanelListener;
 import database.Database;
 import database.chapter.question.Question;
 import database.chapter.question.QuestionState;
 import gui.entryframe.EntryFrame;
 import gui.entryframe.TEXT_AREA_DISPLAY;
+import gui.questionListFrame.QuestionListFrame;
+import gui.settingsframe.SettingsFrame;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -13,8 +16,8 @@ import java.nio.file.Path;
 
 public class BottomMenuListener implements ActionListener
 {
-    private Database database;
-    private EntryFrame entryFrame;
+    final private Database database;
+    final private EntryFrame entryFrame;
 
     public BottomMenuListener(EntryFrame entFrame)
     {
@@ -58,6 +61,15 @@ public class BottomMenuListener implements ActionListener
             entryFrame.setCounter(database.getCorrectAnsweredQuestions(),
                     database.getInCorrectAnsweredQuestions(),
                     database.getActiveQuestionsNumber());
+
+            if(SettingsFrame.settingsFrame != null && SettingsFrame.settingsFrame .isVisible())
+                SettingsFrame.settingsFrame.setChapterList(database.getChapterListRepresentation());
+
+            if(QuestionListFrame.openedQuestionListFrame != null && QuestionListFrame.openedQuestionListFrame.isVisible())
+            {
+                Path cPath = ChapterPanelListener.getLastClickedChapterPanel().getPath();
+                QuestionListFrame.openedQuestionListFrame.setQuestionList(database.getQuestionListRepresentation(cPath));
+            }
         }
     }
 
@@ -77,6 +89,15 @@ public class BottomMenuListener implements ActionListener
             entryFrame.setCounter(database.getCorrectAnsweredQuestions(),
                     database.getInCorrectAnsweredQuestions(),
                     database.getActiveQuestionsNumber());
+
+            if(SettingsFrame.settingsFrame != null && SettingsFrame.settingsFrame .isVisible())
+                SettingsFrame.settingsFrame.setChapterList(database.getChapterListRepresentation());
+
+            if(QuestionListFrame.openedQuestionListFrame != null && QuestionListFrame.openedQuestionListFrame.isVisible())
+            {
+                Path cPath = ChapterPanelListener.getLastClickedChapterPanel().getPath();
+                QuestionListFrame.openedQuestionListFrame.setQuestionList(database.getQuestionListRepresentation(cPath));
+            }
         }
     }
 

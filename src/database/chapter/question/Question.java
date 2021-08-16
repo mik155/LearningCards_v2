@@ -10,35 +10,18 @@ import Utils.Utils;
 
 public class Question
 {
-    /*
-     public static Question readQuestion(final Path questionFilePath)
-            Read question from file. Returns null if reading is impossible.
-
-
-     public boolean setQuestionText(final String text)
-     public boolean setAnswerText(final String text)
-     public void setState(QuestionState state)
-
-
-     public String getQuestionText()
-     public String getAnswerText()
-     public QuestionState getState()
-     public Path getPath()
-
-
-     public boolean removeQuestion()
-            Removes files correlated with Question.
-            Sets path, question, answer to null.
-
-     public void active(boolean b)
-     public boolean isActive()
-     */
     private Path path;
     private String question;
     private String answer;
     private boolean isActive;
     private QuestionState state;
 
+    /**
+     * Creates question in path directory. If given directory laready includes file named: name,
+     * question is not created. Along with questionFile, questionFile_answer is created.
+     * @param path path of directory where new question should be created
+     * @param name name of new question file
+     * */
     public Question(final Path path, final String name)
     {
         state = QuestionState.NO_ANSWER;
@@ -46,6 +29,9 @@ public class Question
         createQuestion(path, name);
     }
 
+    /**
+     * Default contructor.
+     * */
     public Question()
     {
         path = null;
@@ -53,6 +39,10 @@ public class Question
         answer = null;
     }
 
+    /**
+     * Sets question content to text.
+     * @param text new question content
+     * */
     public boolean setQuestionText(final String text)
     {
         if(path != null)
@@ -73,13 +63,17 @@ public class Question
         return false;
     }
 
+    /**
+     * Sets answer content to text.
+     * @param text new answer content
+     * */
     public boolean setAnswerText(final String text)
     {
         if(path != null)
         {
             try
             {
-                FileWriter fileWriter = new FileWriter(path.toString() + "_answer");
+                FileWriter fileWriter = new FileWriter(path + "_answer");
                 fileWriter.write(text);
                 fileWriter.close();
                 answer = text;
@@ -93,33 +87,53 @@ public class Question
         return false;
     }
 
+    /**
+     * Sets question as (not)active.
+     * @param b b == true, question sets to active,
+     *          b == false, question sets to not active
+     * */
     public void active(boolean b)
     {
-        if(isActive == true && b == false)
+        if(isActive && !b)
             setState(QuestionState.NO_ANSWER);
         isActive = b;
     }
 
+    /**
+     * Returns question content.
+     * */
     public String getQuestionText()
     {
         return question;
     }
 
+    /**
+     * Returns answer content of question.
+     * */
     public String getAnswerText()
     {
         return answer;
     }
 
+    /**
+     * Returns question path.
+     * */
     public Path getPath()
     {
         return this.path;
     }
 
+    /**
+     * Returns active state of question.
+     * */
     public boolean isActive()
     {
         return isActive;
     }
 
+    /**
+     * Removes question. If operation was succed returns true (false instead).
+     * */
     public boolean removeQuestion()
     {
         if(path == null)
@@ -139,10 +153,13 @@ public class Question
         return false;
     }
 
+    /**
+     * Read question with given path. Returns responding Question class instance.
+     * */
     public static Question readQuestion(final Path questionFilePath)
     {
         File file = new File(questionFilePath.toString());
-        File answerFile = new File(questionFilePath.toString() + "_answer");
+        File answerFile = new File(questionFilePath + "_answer");
 
         if(!file.exists() || !file.isFile() || !answerFile.exists() || !answerFile.isFile())
             return null;
@@ -155,7 +172,7 @@ public class Question
         if(questionText.equals(null))
             return null;
 
-        String answerText = Utils.getTextFromFile(Paths.get(answerFile.getAbsolutePath().toString()));
+        String answerText = Utils.getTextFromFile(Paths.get(answerFile.getAbsolutePath()));
         if(answerText.equals(null))
             return null;
 
@@ -166,20 +183,29 @@ public class Question
         return question;
     }
 
+    /**
+     * Returns state pf question.
+     * */
     public QuestionState getState()
     {
         return state;
     }
 
+    /**
+     * Sets state of question.
+     * @param state new state of question
+     * */
     public void setState(QuestionState state)
     {
         this.state = state;
     }
 
+    /**
+     * Returns QuestionRepresentation class instance of question.
+     * */
     public QuestionRepresentation getRepresentation()
     {
-        QuestionRepresentation questionRepresentation = new QuestionRepresentation(path, isActive, state, getQuestionText());
-        return questionRepresentation;
+        return new QuestionRepresentation(path, isActive, state, getQuestionText(), getAnswerText());
     }
 
     public String toString()
@@ -201,6 +227,12 @@ public class Question
         isActive = false;
     }
 
+
+    /**
+     * Updates content of answer and question.
+     * @param questionText new question content
+     * @param answerText new answer content
+     * */
     public boolean update(String questionText, String answerText)
     {
         try
@@ -235,8 +267,8 @@ public class Question
                 Utils.ifContainsFile(path, name + "_answer"))
             return false;
 
-        File questionTextFile = new File(path.toString() + File.separator + name);
-        File answerTextFile = new File(path.toString() + File.separator + name + "_answer");
+        File questionTextFile = new File(path + File.separator + name);
+        File answerTextFile = new File(path + File.separator + name + "_answer");
 
         try
         {
@@ -244,7 +276,7 @@ public class Question
             {
                 question = "";
                 answer = "";
-                this.path = Paths.get(path.toString() + File.separator + name);
+                this.path = Paths.get(path + File.separator + name);
                 return true;
             }
             else

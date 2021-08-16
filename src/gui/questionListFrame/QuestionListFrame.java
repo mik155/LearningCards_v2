@@ -3,6 +3,7 @@ package gui.questionListFrame;
 import Utils.Utils;
 import actionlisteners.questionlistframe.QuestionListFrameListener;
 import actionlisteners.questionlistframe.KeyBinding;
+import database.chapter.question.QuestionRepresentation;
 import gui.entryframe.EntryFrame;
 import gui.settingsframe.ChapterPanel;
 import gui.settingsframe.SettingsFrame;
@@ -37,9 +38,9 @@ public class QuestionListFrame extends JFrame
     private JButton setAllNotActiveButton;
     private JButton resetAnswerButton;
 
-    private ChapterPanel chapterPanel;
+    final private ChapterPanel chapterPanel;
 
-    public QuestionListFrame(ChapterPanel cPanel, LinkedList chapterListRep)
+    public QuestionListFrame(ChapterPanel cPanel, LinkedList<QuestionRepresentation> chapterListRep)
     {
         openedQuestionListFrame = this;
         chapterPanel = cPanel;
@@ -57,7 +58,7 @@ public class QuestionListFrame extends JFrame
         setVisible(true);
     }
 
-    public void setQuestionList(LinkedList representation)
+    public void setQuestionList(LinkedList<QuestionRepresentation> representation)
     {
         questionList.setQuestionList(representation);
     }
@@ -73,7 +74,7 @@ public class QuestionListFrame extends JFrame
         return chapterPanel.getPath();
     }
 
-    private void setjScrollPane(LinkedList chapterListRep)
+    private void setjScrollPane(LinkedList<QuestionRepresentation> chapterListRep)
     {
         questionList = new QuestionList(chapterListRep);
         questionList.setMinimumSize(new Dimension(QUESTION_LIST_WIDTH, QUESTION_LIST_HEIGTH));
@@ -98,7 +99,7 @@ public class QuestionListFrame extends JFrame
         bottomPanel.add(Box.createHorizontalGlue());
         bottomPanel.add(setAllNotActiveButton);
         bottomPanel.add(Box.createHorizontalGlue());
-        bottomPanel.add(resetAnswerButton);;
+        bottomPanel.add(resetAnswerButton);
         bottomPanel.add(Box.createHorizontalGlue());
     }
 
@@ -130,10 +131,10 @@ public class QuestionListFrame extends JFrame
 
     private void setActionListeners()
     {
-        addNewQuestionButton.addActionListener(new QuestionListFrameListener(questionList, chapterPanel));
-        setAllActiveButton.addActionListener(new QuestionListFrameListener(questionList, chapterPanel));
-        setAllNotActiveButton.addActionListener(new QuestionListFrameListener(questionList, chapterPanel));
-        resetAnswerButton.addActionListener(new QuestionListFrameListener(questionList, chapterPanel));
+        addNewQuestionButton.addActionListener(new QuestionListFrameListener(chapterPanel));
+        setAllActiveButton.addActionListener(new QuestionListFrameListener(chapterPanel));
+        setAllNotActiveButton.addActionListener(new QuestionListFrameListener(chapterPanel));
+        resetAnswerButton.addActionListener(new QuestionListFrameListener(chapterPanel));
 
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke((char) KeyEvent.VK_DELETE), "PRESSED DELETE");
         getRootPane().getActionMap().put("PRESSED DELETE", new KeyBinding(chapterPanel, questionList));

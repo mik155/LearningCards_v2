@@ -15,8 +15,8 @@ public class QuestionPanel extends JPanel
     private QuestionStateLabel questionStateLabel;
     private JButton resetCounterButton;
     private JCheckBox checkBox;
-    private Path questionPath;
-    private Path chapterPath;
+    final private Path questionPath;
+    final private Path chapterPath;
 
     public QuestionPanel( Path qPath,  Path cPath, String labelText, QuestionState state, boolean active)
     {
@@ -85,12 +85,9 @@ public class QuestionPanel extends JPanel
 
     public void update(QuestionRepresentation questionRepresentation)
     {
-        nameLabel.setText(questionRepresentation.getDescription());
+        nameLabel.setText(questionRepresentation.getQuestionText());
         questionStateLabel.setStateLabel(questionRepresentation.getQuestionState());
-        if(questionRepresentation.isActive())
-            checkBox.setSelected(true);
-        else
-            checkBox.setSelected(false);
+        checkBox.setSelected(questionRepresentation.isActive());
         repaint();
     }
 
@@ -121,10 +118,7 @@ public class QuestionPanel extends JPanel
     {
         checkBox = new JCheckBox();
         checkBox.setOpaque(true);
-        if(active)
-            checkBox.setSelected(true);
-        else
-            checkBox.setSelected(false);
+        checkBox.setSelected(active);
         checkBox.setOpaque(true);
     }
 
@@ -133,5 +127,6 @@ public class QuestionPanel extends JPanel
         addMouseListener(new QuestionPanelListener(this));
         resetCounterButton.addActionListener(new QuestionPanelListener(this));
         checkBox.addActionListener(new QuestionPanelListener(this));
+
     }
 }

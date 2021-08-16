@@ -1,7 +1,6 @@
 package actionlisteners.entryframe;
 
 import database.Database;
-import database.chapter.Chapter;
 import gui.settingsframe.SettingsFrame;
 
 import java.awt.event.ActionEvent;

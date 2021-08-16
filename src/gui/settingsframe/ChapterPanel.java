@@ -9,11 +9,11 @@ import java.nio.file.Path;
 
 public class ChapterPanel extends JLabel
 {
-    private JLabel nameLabel;
-    private Counter counter;
-    private JButton resetCounterButton;
-    private JCheckBox checkBox;
-    private Path path;
+    final private JLabel nameLabel;
+    final private Counter counter;
+    final private JButton resetCounterButton;
+    final private JCheckBox checkBox;
+    final private Path path;
 
     public ChapterPanel(final String name, final Path chapterPath, int c, int ic, int an)
     {

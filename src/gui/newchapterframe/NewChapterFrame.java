@@ -1,8 +1,7 @@
 package gui.newchapterframe;
 
 import actionlisteners.newchapterframe.NewChapterFrameListener;
-import gui.entryframe.EntryFrame;
-import java.nio.file.Path;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,15 +11,8 @@ public class NewChapterFrame extends JFrame
     public static final int FRAME_WIDTH = 500;
     public static final int FRAME_HEIGTH = 195;
 
-    public  static final int LABEL_WIDTH = FRAME_WIDTH;
-    public  static final int LABEL_HEIGTH = 50;
-
-    public static final int TEXT_AREA_WIDTH = FRAME_WIDTH;
-    public static final int TEXT_AREA_HEIGTH = 200;
-
     public static final int BOTTOM_MENU_WIDTH = FRAME_WIDTH;
-    public static final int BOTTOM_MENU_HEIGTH = FRAME_HEIGTH - LABEL_HEIGTH - TEXT_AREA_HEIGTH;
-
+    public static final int BOTTOM_MENU_HEIGTH = 80;
 
     private JTextArea textArea;
     private JButton okButton;
@@ -87,8 +79,8 @@ public class NewChapterFrame extends JFrame
         stylyzeButton(cancelButton);
 
         bottomMenu.add(Box.createRigidArea(new Dimension(50,15)));
-        bottomMenu.setPreferredSize(new Dimension(FRAME_WIDTH, 80));
-        bottomMenu.setMaximumSize(new Dimension(FRAME_WIDTH, 80));
+        bottomMenu.setPreferredSize(new Dimension(BOTTOM_MENU_WIDTH, BOTTOM_MENU_HEIGTH));
+        bottomMenu.setMaximumSize(new Dimension(BOTTOM_MENU_WIDTH, BOTTOM_MENU_HEIGTH));
         bottomMenu.add(okButton);
         bottomMenu.add(Box.createRigidArea(new Dimension(30,0)));
         bottomMenu.add(cancelButton);
@@ -102,7 +94,7 @@ public class NewChapterFrame extends JFrame
         cancelButton.addActionListener(new NewChapterFrameListener(this));
     }
 
-    private   static void stylyzeButton(final JButton button)
+    private static void stylyzeButton(final JButton button)
     {
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);

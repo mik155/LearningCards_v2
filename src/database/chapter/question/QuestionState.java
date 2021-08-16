@@ -2,6 +2,12 @@ package database.chapter.question;
 
 public enum QuestionState
 {
+    /**
+     * Enum class. It has 3 instance's.
+     * CORRECT - is set if question was correct answered
+     * IN_CORRECT - is set if question was not answered correct
+     * NO_ANSWER - is set if question wasn't answered
+     * */
     CORRECT
             {
                 @Override
@@ -19,7 +25,7 @@ public enum QuestionState
                     return false;
                 }
 
-                public String toString(){return  "☑";};
+                public String toString(){return  "☑";}
             },
 
     IN_CORRECT
@@ -39,7 +45,7 @@ public enum QuestionState
                     return false;
                 }
 
-                public String toString(){return  "☒";};
+                public String toString(){return  "☒";}
             },
 
     NO_ANSWER
@@ -59,7 +65,7 @@ public enum QuestionState
                     return true;
                 }
 
-                public String toString(){return  "☐";};
+                public String toString(){return  "☐";}
             };
 
     public abstract boolean correct();

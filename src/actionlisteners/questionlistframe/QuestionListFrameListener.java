@@ -1,13 +1,11 @@
 package actionlisteners.questionlistframe;
 
-import actionlisteners.questionlistframe.questionlist.QuestionPanelListener;
 import database.Database;
 import gui.entryframe.EntryFrame;
 import gui.newquestionframe.NewQuestionFrame;
-import gui.questionListFrame.QuestionList;
 import gui.questionListFrame.QuestionListFrame;
-import gui.questionListFrame.QuestionPanel;
 import gui.settingsframe.ChapterPanel;
+import gui.settingsframe.SettingsFrame;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -16,15 +14,13 @@ import java.nio.file.Path;
 
 public class QuestionListFrameListener implements ActionListener
 {
-    private QuestionList questionList;
-    private NewQuestionFrame newQuestionFrame;
     private static final Database database = Database.database;
-    private ChapterPanel chapterPanel;
+    private NewQuestionFrame newQuestionFrame;
+    final private ChapterPanel chapterPanel;
 
-    public QuestionListFrameListener(QuestionList list, ChapterPanel cPanel)
+    public QuestionListFrameListener(ChapterPanel cPanel)
     {
         chapterPanel = cPanel;
-        questionList = list;
         newQuestionFrame = null;
     }
 
@@ -49,7 +45,7 @@ public class QuestionListFrameListener implements ActionListener
     private void newQuestionButtonPressed()
     {
         if(newQuestionFrame == null || !newQuestionFrame.isActive())
-            newQuestionFrame = new NewQuestionFrame(null ,chapterPanel);
+            newQuestionFrame = new NewQuestionFrame(null ,chapterPanel, null, null);
     }
 
     private void activeButtonPressed()
@@ -59,7 +55,8 @@ public class QuestionListFrameListener implements ActionListener
             Path chapterPath = chapterPanel.getPath();
             database.activateAllQuestionsOfChapter(chapterPath);
             QuestionListFrame.openedQuestionListFrame.setQuestionList(database.getQuestionListRepresentation(chapterPath));
-            chapterPanel.update(database.getChapterRepresentation(chapterPath));
+            if(SettingsFrame.settingsFrame != null && SettingsFrame.settingsFrame .isVisible())
+                SettingsFrame.settingsFrame.setChapterList(database.getChapterListRepresentation());
             EntryFrame.entryFrame.update();
         }
     }
@@ -69,7 +66,8 @@ public class QuestionListFrameListener implements ActionListener
         Path chapterPath = chapterPanel.getPath();
         database.deactivateAllQuestionsOfChapter(chapterPath);
         QuestionListFrame.openedQuestionListFrame.setQuestionList(database.getQuestionListRepresentation(chapterPath));
-        chapterPanel.update(database.getChapterRepresentation(chapterPath));
+        if(SettingsFrame.settingsFrame != null && SettingsFrame.settingsFrame .isVisible())
+            SettingsFrame.settingsFrame.setChapterList(database.getChapterListRepresentation());
         EntryFrame.entryFrame.update();
     }
 
@@ -78,7 +76,8 @@ public class QuestionListFrameListener implements ActionListener
         Path chapterPath = chapterPanel.getPath();
         Database.database.resetChapterAnswers(chapterPath);
         QuestionListFrame.openedQuestionListFrame.setQuestionList(database.getQuestionListRepresentation(chapterPath));
-        chapterPanel.update(database.getChapterRepresentation(chapterPath));
+        if(SettingsFrame.settingsFrame != null && SettingsFrame.settingsFrame .isVisible())
+            SettingsFrame.settingsFrame.setChapterList(database.getChapterListRepresentation());
         EntryFrame.entryFrame.update();
     }
 }

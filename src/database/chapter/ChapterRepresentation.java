@@ -1,6 +1,6 @@
 package database.chapter;
 
-import java.nio.file.Path;;
+import java.nio.file.Path;
 
 public class ChapterRepresentation
 {

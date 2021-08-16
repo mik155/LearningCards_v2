@@ -3,7 +3,7 @@ package gui.settingsframe;
 import Utils.Utils;
 import actionlisteners.settingsframe.SettingsFrameListener;
 import actionlisteners.settingsframe.chapterlist.KeyBinding;
-import gui.Counter;
+import database.chapter.ChapterRepresentation;
 import gui.entryframe.EntryFrame;
 
 import javax.swing.*;
@@ -38,7 +38,7 @@ public class SettingsFrame extends JFrame
     private JButton deactiveAllButton;
     private JButton resetCounterButton;
 
-    public SettingsFrame(LinkedList chapterListRep)
+    public SettingsFrame(LinkedList<ChapterRepresentation> chapterListRep)
     {
         settingsFrame = this;
         setjScrollPane(chapterListRep);
@@ -61,12 +61,12 @@ public class SettingsFrame extends JFrame
         chapterList.addChapterPanel(chapterPanel);
     }
 
-    public void setChapterList(LinkedList representation)
+    public void setChapterList(LinkedList<ChapterRepresentation> representation)
     {
         chapterList.setChapterList(representation);
     }
 
-    private void setjScrollPane(LinkedList chapterListRep)
+    private void setjScrollPane(LinkedList<ChapterRepresentation> chapterListRep)
     {
         chapterList = new ChapterList(chapterListRep);
         chapterList.setMinimumSize(new Dimension(CHAPTER_LIST_WIDTH, CHAPTER_LIST_HEIGTH));
@@ -135,10 +135,10 @@ public class SettingsFrame extends JFrame
 
     private void setActionListeners()
     {
-        addButton.addActionListener(new SettingsFrameListener(chapterList));
-        activeAllButton.addActionListener(new SettingsFrameListener(chapterList));
-        deactiveAllButton.addActionListener(new SettingsFrameListener(chapterList));
-        resetCounterButton.addActionListener(new SettingsFrameListener(chapterList));
+        addButton.addActionListener(new SettingsFrameListener());
+        activeAllButton.addActionListener(new SettingsFrameListener());
+        deactiveAllButton.addActionListener(new SettingsFrameListener());
+        resetCounterButton.addActionListener(new SettingsFrameListener());
 
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke((char) KeyEvent.VK_DELETE), "PRESSED DELETE");
         getRootPane().getActionMap().put("PRESSED DELETE", new KeyBinding(chapterList));

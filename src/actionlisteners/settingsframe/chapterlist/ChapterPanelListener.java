@@ -12,7 +12,7 @@ import static database.Database.database;
 public class ChapterPanelListener implements MouseListener, ActionListener
 {
 
-    private ChapterPanel chapterPanel;
+    final private ChapterPanel chapterPanel;
     private static ChapterPanel lastClickedChapterPanel;
     private static long time;
 

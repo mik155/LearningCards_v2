@@ -21,16 +21,15 @@ public class MainTest
 
     public static void main(String [] args)
     {
-        path = Paths.get("TestDirectory").toAbsolutePath();
-        Database database = new Database(path, Mode.CREATE);
-        Path cpath = database.addNewChapter("chapter_1");
-        Path cpath2 = database.addNewChapter("chapter_2");
-        database.addNewQuestion(cpath, "Pytanie nr 1.", "Odpowiedz 1");
-        database.addNewQuestion(cpath, "Pytanie nr 2.", "Odpowiedz 2");
-        database.addNewQuestion(cpath, "Pytanie nr 3.", "Odpowiedz 3");
+        path = Paths.get("/home/nicolaus/Desktop/JavaLearningCards/LearningCardsDatabase1").toAbsolutePath();
+        Database database = new Database(path, Mode.OPEN);
+        Question question = database.nextQuestion();
+
         EntryFrame entryFrame = new EntryFrame(database.getCorrectAnsweredQuestions(),
                 database.getInCorrectAnsweredQuestions(),
-                database.getActiveQuestionsNumber(), database.nextQuestion().getQuestionText(), TEXT_AREA_DISPLAY.QUESTION);
+                database.getActiveQuestionsNumber(),
+                question != null ? question.getQuestionText() : null,
+                TEXT_AREA_DISPLAY.QUESTION);
     }
 
     private static void setUp() {

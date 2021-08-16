@@ -130,7 +130,9 @@ public class EntryFrame extends JFrame
         setCounter(co, in, ac);
         if(Database.database.getActiveQuestionsNumber() > 0)
         {
-            if(!Database.database.getLastRetunedQuestion().isActive())
+            if(Database.database.getLastRetunedQuestion() == null)
+                setText(Database.database.nextQuestion().getQuestionText());
+            else if(!Database.database.getLastRetunedQuestion().isActive())
                 setText(Database.database.nextQuestion().getQuestionText());
             else
                 setText(Database.database.getLastRetunedQuestion().getQuestionText());

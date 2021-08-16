@@ -10,7 +10,6 @@ import database.chapter.question.QuestionState;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -32,7 +31,7 @@ public class Database {
     private int correctAnsweredQuestions;
     private int inCorrectAnsweredQuestions;
 
-    private ListIterator iterator;
+    private ListIterator<Chapter> iterator;
     private LastSerachedBy lastSerachedBy;
     private Question lastReturnedQuestion;
     private Chapter lastReturnedChapter;
@@ -59,21 +58,23 @@ public class Database {
             //read database from disk
             if (file.exists() && file.isDirectory()) {
                 path = initDirectory;
-                chapterList = new LinkedList<Chapter>();
+                chapterList = new LinkedList<>();
                 downloadChaptersFromDirectory(path);
                 database = this;
             }
         } //if(mode.open())
 
-        if (mode.create()) {
+        if (mode.create())
+        {
             //create new database
-            if (file.isDirectory()) {
+            if (file.isDirectory())
+            {
                 String dirName = Utils.getFreeFileName(initDirectory, "LearningCardsDatabase");
-                String absolutePath = initDirectory.toString() + File.separator + dirName;
+                String absolutePath = initDirectory + File.separator + dirName;
                 File databaseDirectory = new File(absolutePath);
                 if (databaseDirectory.mkdir()) {
                     path = Paths.get(absolutePath);
-                    chapterList = new LinkedList<Chapter>();
+                    chapterList = new LinkedList<>();
                     database = this;
                     activeQuestionsNumber = 0;
                     correctAnsweredQuestions = 0;
@@ -94,7 +95,8 @@ public class Database {
      */
     public Path addNewQuestion(final Path chapterPath, final String questionText, final String answerText) {
         Chapter chapter = getChapter(chapterPath);
-        if (!chapter.equals(null)) {
+        if (chapter != null)
+        {
             Path newChapterPath = chapter.addNewQuestion(questionText, answerText);
             activeQuestionsNumber++;
             return newChapterPath;
@@ -129,17 +131,16 @@ public class Database {
      *
      * @param chapterPath name of Chapter that will be deleted
      */
-    public void removeChapter(final Path chapterPath) {
-        Iterator tmpIterator = chapterList.listIterator();
-        while (tmpIterator.hasNext()) {
-            Chapter chapter = (Chapter) tmpIterator.next();
-            if (chapter.getPath().equals(chapterPath)) {
+    public void removeChapter(final Path chapterPath)
+    {
+        for(Chapter chapter : chapterList)
+        {
+            if (chapter.getPath().equals(chapterPath))
+            {
                 activeQuestionsNumber -= chapter.getActiveQuestionsNumber();
                 inCorrectAnsweredQuestions -= chapter.getInCorrectAnsweredQuestions();
                 correctAnsweredQuestions -= chapter.getCorrectAnsweredQuestions();
-
                 chapter.delete();
-                tmpIterator.remove();
 
                 if (lastReturnedChapter != null) {
                     int index = chapterList.indexOf(lastReturnedChapter) + 1;
@@ -158,10 +159,10 @@ public class Database {
      * @param questionPath Path of removing question.
      */
 
-    public void removeQuestion(Path chapterPath, Path questionPath) {
-        Iterator iterator = chapterList.iterator();
-        while (iterator.hasNext()) {
-            Chapter chapter = (Chapter) iterator.next();
+    public void removeQuestion(Path chapterPath, Path questionPath)
+    {
+        for(Chapter chapter : chapterList)
+        {
             if (chapter.getPath().equals(chapterPath)) {
                 if (chapter.isActive(questionPath))
                     activeQuestionsNumber--;
@@ -232,7 +233,7 @@ public class Database {
     }
 
     private Question getNextActiveQuestionFromChapter() {
-        Question questionCandidate = null;
+        Question questionCandidate;
         while (lastReturnedChapter.hasNextQuestion()) {
             questionCandidate = lastReturnedChapter.nextQuestion();
             if (questionCandidate.isActive() && questionCandidate.getState().noAnswer())
@@ -242,7 +243,7 @@ public class Database {
     }
 
     private Question getPreviousActiveQuestionFromChapter() {
-        Question questionCandidate = null;
+        Question questionCandidate;
         while (lastReturnedChapter.hasPrevQuestion()) {
             questionCandidate = lastReturnedChapter.previousQuestion();
             if (questionCandidate.isActive() && questionCandidate.getState().noAnswer())
@@ -279,9 +280,8 @@ public class Database {
         if (lastSerachedBy == null)
             lastSerachedBy = LastSerachedBy.NEXT;
 
-        Chapter returnChapter = null;
-
-        if (lastSerachedBy.prev()) {
+        if (lastSerachedBy.prev())
+        {
             if (iterator.hasNext())
                 iterator.next();
             else {
@@ -290,11 +290,13 @@ public class Database {
             }
         }
 
+        Chapter returnChapter;
+
         if (iterator.hasNext())
-            returnChapter = (Chapter) iterator.next();
+            returnChapter = iterator.next();
         else {
             iterator = chapterList.listIterator();
-            returnChapter = (Chapter) iterator.next();
+            returnChapter = iterator.next();
         }
 
         lastSerachedBy = LastSerachedBy.NEXT;
@@ -309,8 +311,6 @@ public class Database {
         if (lastSerachedBy == null)
             lastSerachedBy = LastSerachedBy.PREV;
 
-        Chapter returnChapter = null;
-
         if (lastSerachedBy.next()) {
             if (iterator.hasPrevious())
                 iterator.previous();
@@ -321,12 +321,14 @@ public class Database {
             }
         }
 
+        Chapter returnChapter;
+
         if (iterator.hasPrevious())
-            returnChapter = (Chapter) iterator.previous();
+            returnChapter = iterator.previous();
         else {
             while (iterator.hasNext())
                 iterator.next();
-            returnChapter = (Chapter) iterator.previous();
+            returnChapter = iterator.previous();
         }
 
         lastSerachedBy = LastSerachedBy.PREV;
@@ -334,9 +336,11 @@ public class Database {
     }
 
     /**
-     * @return path of chapter from which last question was returned.
+     * Returns path of chapter from which last question was returned.
+     * @return instance of Path class
      */
-    public Path getLastReturnedChapterPath() {
+    public Path getLastReturnedChapterPath()
+    {
         if (lastReturnedChapter == null)
             return null;
 
@@ -344,28 +348,32 @@ public class Database {
     }
 
     /**
-     * @return Returns number of active questions.
+     * Returns number of active questions.
+     * @return number of active questions (int)
      */
     public int getActiveQuestionsNumber() {
         return activeQuestionsNumber;
     }
 
     /**
-     * @return Returns number of incorrect asnwered questions.
+     * Returns number of incorrect asnwered questions.
+     * @return number of incorrect asnwered questions(int).
      */
     public int getInCorrectAnsweredQuestions() {
         return inCorrectAnsweredQuestions;
     }
 
     /**
-     * @return Returns number of correct asnwered questions.
+     * Returns number of correct asnwered questions.
+     * @return number of correct asnwered questions (int).
      */
     public int getCorrectAnsweredQuestions() {
         return correctAnsweredQuestions;
     }
 
     /**
-     * @return Returns number of asnwered questions.
+     * Returns number of asnwered questions.
+     * @return number of asnwered questions (int).
      */
     public int getAnsweredQuestions() {
         return correctAnsweredQuestions + inCorrectAnsweredQuestions;
@@ -374,7 +382,7 @@ public class Database {
     /**
      * Sets state of specific question.
      *
-     * @param chapterPath  path of chapter thah desired question
+     * @param chapterPath  path of chapter where desired question belongs
      * @param questionPath path of desired question
      * @param state        state of question that will be set
      */
@@ -401,12 +409,30 @@ public class Database {
      * @param questionPath path of desired question
      * @param active       new value of active field
      */
-    public void active(Path chapterPath, Path questionPath, boolean active) {
+    public void active(Path chapterPath, Path questionPath, boolean active)
+    {
         Chapter chapter = getChapter(chapterPath);
         if (chapter != null)
-            chapter.setActive(active, questionPath);
-    }
+        {
+            int inCorrect = chapter.getInCorrectAnsweredQuestions();
+            int correct = chapter.getCorrectAnsweredQuestions();
 
+            if (chapter.setActive(active, questionPath))
+            {
+                if (active)
+                    activeQuestionsNumber++;
+                else
+                    activeQuestionsNumber--;
+            }
+
+            inCorrect = chapter.getInCorrectAnsweredQuestions() - inCorrect;
+            correct = chapter.getCorrectAnsweredQuestions() - correct;
+
+            inCorrectAnsweredQuestions += inCorrect;
+            correctAnsweredQuestions += correct;
+
+        }
+    }
 
     /**
      * Returns value of question acticve field. If guestion doesn't exist, returns false.
@@ -424,12 +450,12 @@ public class Database {
 
     /**
      * Returns Question state object of specific question. If question doesn't exist, returns false.
-     *
      * @param chapterPath  path to chapter that includes question
      * @param questionPath path to specific question
      * @return returns QuestionState object of specific question
      */
-    public QuestionState qetQuestionState(Path chapterPath, Path questionPath) {
+    public QuestionState qetQuestionState(Path chapterPath, Path questionPath)
+    {
         Chapter chapter = getChapter(chapterPath);
         if (chapterPath != null)
             return chapter.getQuestionState(questionPath);
@@ -438,18 +464,24 @@ public class Database {
 
     /**
      * Returns last returned question.
+     * @return instance of Question class
      */
-    public Question getLastRetunedQuestion() {
+    public Question getLastRetunedQuestion()
+    {
         return lastReturnedQuestion;
     }
 
-    public LinkedList getChapterListRepresentation()
+
+    /**
+     * Returns list of ChapterRepresentation instance's.
+     * List corresponds to chapters included in database.
+     * @return instance of LinkedList<ChapterRepresentation>
+     * */
+    public LinkedList<ChapterRepresentation> getChapterListRepresentation()
     {
         LinkedList<ChapterRepresentation> list = new LinkedList<>();
-        Iterator iterator = chapterList.listIterator();
-        while (iterator.hasNext())
+        for (Chapter chapter : chapterList)
         {
-            Chapter chapter = (Chapter) iterator.next();
             list.add(new ChapterRepresentation(chapter.getPath(), chapter.getName()
                     , chapter.getCorrectAnsweredQuestions(), chapter.getInCorrectAnsweredQuestions(),
                     chapter.getActiveQuestionsNumber()));
@@ -457,7 +489,13 @@ public class Database {
         return list;
     }
 
-    public LinkedList getQuestionListRepresentation(Path chapterPath)
+    /**
+     * Returns list of QuestionRepresentation instance's.
+     * List corresponds to chapter specified by chapterPath.
+     * If chapter doesn't exit, returns null.
+     * @return instance of LinkedList<QuestionRepresentation>
+     * */
+    public LinkedList<QuestionRepresentation> getQuestionListRepresentation(Path chapterPath)
     {
         for(Chapter chapter : chapterList)
         {
@@ -467,6 +505,12 @@ public class Database {
         return null;
     }
 
+    /**
+     * Returns ChapterRepresentation instance that corresponds to speciffied chapter.
+     * If chapter doesn't exit, returns null.
+     * @param chapterPath path of chapter
+     * @return instance of ChapterRepresentation
+     * */
     public ChapterRepresentation getChapterRepresentation(Path chapterPath)
     {
         for(Chapter chapter : chapterList)
@@ -477,6 +521,13 @@ public class Database {
         return null;
     }
 
+    /**
+     * Returns QuestionRepresentation instance that corresponds to speciffied question.
+     * If question doesn't exit, returns null.
+     * @param chapterPath path of chapter
+     * @param questionPath path of question
+     * @return instance of QuestionRepresentation
+     * */
     public QuestionRepresentation getQuestionRepresentation(Path chapterPath, Path questionPath)
     {
         for(Chapter chapter : chapterList)
@@ -487,6 +538,11 @@ public class Database {
         return null;
     }
 
+    /**
+     * Returns path of last returned question. If no question was returned, returns null.
+     * Question can be returned by nextQuestion() or previousQuestion() function.
+     * @return path of last returned question.
+     * */
     public Path getLastReturnedQuestionPath()
     {
         if(lastReturnedQuestion == null)
@@ -494,14 +550,14 @@ public class Database {
         return lastReturnedQuestion.getPath();
     }
 
+    /**
+     * Sets active state of all questions on true.
+     * */
     public void activateAllQuestions()
     {
         activeQuestionsNumber = 0;
-        Iterator iterator = chapterList.iterator();
-        Chapter chapter = null;
-        while (iterator.hasNext())
+        for(Chapter chapter : chapterList)
         {
-            chapter = (Chapter) iterator.next();
             chapter.setAllQuestionsActive();
             activeQuestionsNumber += chapter.getActiveQuestionsNumber();
         }
@@ -509,21 +565,23 @@ public class Database {
         inCorrectAnsweredQuestions = 0;
     }
 
+    /**
+     * Sets active state of all questions on false.
+     * */
     public void deactivateAllQuestions()
     {
         activeQuestionsNumber = 0;
-        Iterator iterator = chapterList.iterator();
-        Chapter chapter = null;
-        while (iterator.hasNext())
-        {
-            chapter = (Chapter) iterator.next();
+        for(Chapter chapter : chapterList)
             chapter.setAllQuestionsNotActive();
-        }
         activeQuestionsNumber = 0;
         correctAnsweredQuestions = 0;
         inCorrectAnsweredQuestions = 0;
     }
 
+    /**
+     * Sets active state of all questions from specific chapter on true.
+     * if chapter doens't exist, does nothing.
+     * */
     public void activateAllQuestionsOfChapter(Path chapterPath)
     {
         for(Chapter chapter : chapterList)
@@ -540,6 +598,10 @@ public class Database {
         }
     }
 
+    /**
+     * Sets active state of all questions from specific chapter on false.
+     * if chapter doens't exist, does nothing.
+     * */
     public void deactivateAllQuestionsOfChapter(Path chapterPath)
     {
         for(Chapter chapter : chapterList)
@@ -555,7 +617,9 @@ public class Database {
         }
     }
 
-
+    /**
+     * Sets state of all questions on QuestionState.NO_ANSWER.
+     * */
     public void resetAnswers()
     {
         for(Chapter chapter : chapterList)
@@ -564,6 +628,11 @@ public class Database {
         correctAnsweredQuestions = 0;
     }
 
+    /**
+     * Sets state of all questions from specific chapter on QuestionState.NO_ANSWER.
+     * if chapter doens't exist, does nothing.
+     * @param chapterPath path of chapter
+     * */
     public void resetChapterAnswers(Path chapterPath)
     {
         for(Chapter chapter : chapterList)
@@ -578,6 +647,15 @@ public class Database {
         }
     }
 
+    /**
+     * Updates content of qiven question. if update wasn't succesful, returns false.
+     * @param chapterPath path of chapter
+     * @param questionPath path of question
+     * @param questionText new text of question
+     * @param answerText new text of question_answer
+     * @return boolean, true - update was succesfull
+     *                  false - update was not succesfull
+     **/
     public boolean updateQuestion(Path chapterPath, Path questionPath,
                                   String questionText, String answerText)
     {
@@ -589,11 +667,8 @@ public class Database {
 
     private Chapter getChapter(final Path chapterPath)
     {
-        Iterator iterator = chapterList.iterator();
-        Chapter chapter = null;
-        while (iterator.hasNext())
+        for (Chapter chapter : chapterList)
         {
-            chapter = (Chapter) iterator.next();
             if(chapter.getPath().equals(chapterPath))
                 return chapter;
         }
@@ -608,9 +683,9 @@ public class Database {
             File [] files = file.listFiles();
             for(File f : files)
             {
-                if(isChapterName(f.toPath().getFileName().toString()))
+                if(f.isDirectory())
                 {
-                    Chapter newChapter = Chapter.readChapter(dirPath);
+                    Chapter newChapter = Chapter.readChapter(f.toPath());
                     if(newChapter == null)
                         continue;
                     chapterList.add(newChapter);

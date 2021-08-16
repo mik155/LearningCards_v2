@@ -4,22 +4,21 @@ import actionlisteners.settingsframe.chapterlist.ChapterPanelListener;
 import database.Database;
 import gui.entryframe.EntryFrame;
 import gui.newchapterframe.NewChapterFrame;
-import gui.settingsframe.ChapterList;
+import gui.questionListFrame.QuestionListFrame;
 import gui.settingsframe.SettingsFrame;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.Path;
 
 
 public class SettingsFrameListener implements ActionListener
 {
-    private ChapterList chapterList;
     private NewChapterFrame newChapterFrame;
 
 
-    public SettingsFrameListener(ChapterList list)
+    public SettingsFrameListener()
     {
-        chapterList = list;
         newChapterFrame = null;
     }
 
@@ -51,6 +50,11 @@ public class SettingsFrameListener implements ActionListener
     {
         Database.database.activateAllQuestions();
         SettingsFrame.settingsFrame.setChapterList(Database.database.getChapterListRepresentation());
+        if(QuestionListFrame.openedQuestionListFrame != null && QuestionListFrame.openedQuestionListFrame.isVisible())
+        {
+            Path cPath = ChapterPanelListener.getLastClickedChapterPanel().getPath();
+            QuestionListFrame.openedQuestionListFrame.setQuestionList(Database.database.getQuestionListRepresentation(cPath));
+        }
         EntryFrame.entryFrame.update();
     }
 
@@ -58,6 +62,11 @@ public class SettingsFrameListener implements ActionListener
     {
         Database.database.deactivateAllQuestions();
         SettingsFrame.settingsFrame.setChapterList(Database.database.getChapterListRepresentation());
+        if(QuestionListFrame.openedQuestionListFrame != null && QuestionListFrame.openedQuestionListFrame.isVisible())
+        {
+            Path cPath = ChapterPanelListener.getLastClickedChapterPanel().getPath();
+            QuestionListFrame.openedQuestionListFrame.setQuestionList(Database.database.getQuestionListRepresentation(cPath));
+        }
         EntryFrame.entryFrame.update();
     }
 
@@ -65,6 +74,11 @@ public class SettingsFrameListener implements ActionListener
     {
         Database.database.resetAnswers();
         SettingsFrame.settingsFrame.setChapterList(Database.database.getChapterListRepresentation());
+        if(QuestionListFrame.openedQuestionListFrame != null && QuestionListFrame.openedQuestionListFrame.isVisible())
+        {
+            Path cPath = ChapterPanelListener.getLastClickedChapterPanel().getPath();
+            QuestionListFrame.openedQuestionListFrame.setQuestionList(Database.database.getQuestionListRepresentation(cPath));
+        }
         EntryFrame.entryFrame.update();
     }
 }

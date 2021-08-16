@@ -8,7 +8,7 @@ public class Counter extends JPanel
     private int correctAnswered;
     private int incorrectAnswered;
     private int active;
-    private JLabel label;
+    final private JLabel label;
 
     public Counter(int c, int ic, int a)
     {

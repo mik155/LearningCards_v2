@@ -178,7 +178,6 @@ public class DatabaseTest
         {
             System.out.println(e.toString());
         }
-
     }
 
     @Test

@@ -7,34 +7,34 @@ import gui.settingsframe.ChapterPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.nio.file.Path;
 
 public class NewQuestionFrame extends JFrame
 {
     public static final int FRAME_WIDTH = EntryFrame.FRAME_WIDTH;
     public static final int FRAME_HEIGTH = EntryFrame.FRAME_HEIGTH;
 
-    public static final int TEXT_AREA_WIDTH = EntryFrame.TEXT_AREA_WIDTH;
-    public static final int TEXT_AREA_HEIGTH = EntryFrame.TEXT_AREA_WIDTH;
-
     public static final int BOTTOM_MENU_WIDTH = EntryFrame.BOTTOM_MENU_WIDTH;
     public static final int BOTTOM_MENU_HEIGTH = EntryFrame.BOTTOM_MENU_HEIGTH;
 
     public static NewQuestionFrame openedNewQuestionFrame = null;
 
-    private QuestionPanel questionPanel;
+    private final QuestionPanel questionPanel;
     private JButton okButton;
     private JButton cancelButton;
     private JScrollPane questionScrollPane;
     private JScrollPane answerScrollPane;
     private JTextArea questionTextArea;
     private JTextArea answerTextArea;
+    private String questionText;
+    private String answerText;
 
-    private ChapterPanel chapterPanel;
+    final private ChapterPanel chapterPanel;
 
 
-    public NewQuestionFrame(QuestionPanel qPanel, ChapterPanel cPanel)
+    public NewQuestionFrame(QuestionPanel qPanel, ChapterPanel cPanel, String qText, String aText)
     {
+        questionText = qText;
+        answerText = aText;
         chapterPanel = cPanel;
         questionPanel = qPanel;
         openedNewQuestionFrame = this;
@@ -95,6 +95,8 @@ public class NewQuestionFrame extends JFrame
     private void setQuestionTextArea()
     {
         questionTextArea = new JTextArea();
+        if(questionText != null)
+            questionTextArea.setText(questionText);
         questionTextArea.setLineWrap(true);
         questionTextArea.setWrapStyleWord(true);
 
@@ -105,6 +107,8 @@ public class NewQuestionFrame extends JFrame
     private void setAnswerTextArea()
     {
         answerTextArea = new JTextArea();
+        if(answerText != null)
+            answerTextArea.setText(answerText);
         answerTextArea.setLineWrap(true);
         answerTextArea.setWrapStyleWord(true);
 
@@ -115,10 +119,10 @@ public class NewQuestionFrame extends JFrame
     private JPanel getBottomMenu()
     {
         okButton = new JButton("OK");
-        EntryFrame.stylyzeButton(okButton);
+        stylyzeButton(okButton);
 
         cancelButton = new JButton("CANCEL");
-        EntryFrame.stylyzeButton(cancelButton);
+        stylyzeButton(cancelButton);
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
@@ -137,5 +141,12 @@ public class NewQuestionFrame extends JFrame
     {
         okButton.addActionListener(new NewQuestionFrameListener(questionPanel));
         cancelButton.addActionListener(new NewQuestionFrameListener(questionPanel));
+    }
+
+    private void stylyzeButton(final JButton button)
+    {
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setFont(new Font(button.getFont().getName(), Font.PLAIN, 15));
     }
 }

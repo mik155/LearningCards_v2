@@ -1,12 +1,9 @@
 package gui.questionListFrame;
 
-import database.chapter.ChapterRepresentation;
 import database.chapter.question.QuestionRepresentation;
-import gui.settingsframe.ChapterPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class QuestionList extends JPanel
@@ -17,11 +14,11 @@ public class QuestionList extends JPanel
         setBackground(Color.WHITE);
         if(questionListRep != null)
         {
-            QuestionPanel questionPanel = null;
+            QuestionPanel questionPanel;
             for(QuestionRepresentation qRep : questionListRep)
             {
                 questionPanel = new QuestionPanel(qRep.getQuestionPath(), qRep.getChapterPath(),
-                        qRep.getDescription(), qRep.getQuestionState(), qRep.isActive());
+                        qRep.getQuestionText(), qRep.getQuestionState(), qRep.isActive());
                 add(questionPanel);
             }
         }
@@ -40,16 +37,15 @@ public class QuestionList extends JPanel
         repaint();
     }
 
-    public void setQuestionList(LinkedList questionListRep)
+    public void setQuestionList(LinkedList<QuestionRepresentation> questionListRep)
     {
         removeAll();
         if(questionListRep != null)
         {
-            Iterator iterator = questionListRep.listIterator();
-            while (iterator.hasNext()) {
-                QuestionRepresentation qRep = (QuestionRepresentation) iterator.next();
+            for(QuestionRepresentation qRep : questionListRep)
+            {
                 QuestionPanel questionPanel = new QuestionPanel(qRep.getQuestionPath(), qRep.getChapterPath(),
-                        qRep.getDescription(), qRep.getQuestionState(), qRep.isActive());
+                        qRep.getQuestionText(), qRep.getQuestionState(), qRep.isActive());
                 add(questionPanel);
             }
         }

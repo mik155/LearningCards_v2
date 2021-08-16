@@ -1,10 +1,10 @@
 package actionlisteners.questionlistframe.questionlist;
 
 import actionlisteners.settingsframe.chapterlist.ChapterPanelListener;
+import database.chapter.question.QuestionRepresentation;
 import database.chapter.question.QuestionState;
 import gui.entryframe.EntryFrame;
 import gui.newquestionframe.NewQuestionFrame;
-import gui.questionListFrame.QuestionListFrame;
 import gui.questionListFrame.QuestionPanel;
 import gui.settingsframe.SettingsFrame;
 
@@ -20,8 +20,8 @@ import static database.Database.database;
 
 public class QuestionPanelListener implements MouseListener, ActionListener
 {
-    private QuestionPanel clickedPanel;
     private static QuestionPanel lastClickedPanel = null;
+    final private QuestionPanel clickedPanel;
     private static long time;
 
     public QuestionPanelListener(QuestionPanel qPanel)
@@ -49,11 +49,12 @@ public class QuestionPanelListener implements MouseListener, ActionListener
             long timeDiff = actualTime - time;
             if(timeDiff <= 500)
             {
-                Path chapterPath = clickedPanel.getChapterPath();
                 if(NewQuestionFrame.openedNewQuestionFrame != null)
                     NewQuestionFrame.openedNewQuestionFrame.dispose();
-                NewQuestionFrame.openedNewQuestionFrame = new NewQuestionFrame(clickedPanel, ChapterPanelListener.getLastClickedPanel());
-
+                QuestionRepresentation qRep = database.getQuestionRepresentation(clickedPanel.getChapterPath(), clickedPanel.getQuestionPath());
+                String question = qRep.getQuestionText();
+                String answer = qRep.getAnswerText();
+                NewQuestionFrame.openedNewQuestionFrame = new NewQuestionFrame(clickedPanel, ChapterPanelListener.getLastClickedPanel(), question, answer);
              }
             else
             {
@@ -108,10 +109,7 @@ public class QuestionPanelListener implements MouseListener, ActionListener
             Path chapterPath = clickedPanel.getChapterPath();
 
             JCheckBox checkBox = (JCheckBox) object;
-            if(!checkBox.isSelected())
-                database.active(chapterPath, questionPath, false);
-            else
-                database.active(chapterPath, questionPath, true);
+            database.active(chapterPath, questionPath, checkBox.isSelected());
 
             clickedPanel.update(database.getQuestionRepresentation(chapterPath, questionPath));
             if(SettingsFrame.settingsFrame != null && SettingsFrame.settingsFrame.isVisible())

@@ -1,39 +1,34 @@
 package gui.settingsframe;
 
 import database.chapter.ChapterRepresentation;
+
 import javax.swing.*;
 import java.awt.*;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class ChapterList extends JPanel
 {
-    public ChapterList(LinkedList chapterListRep)
+    public ChapterList(LinkedList<ChapterRepresentation> chapterListRep)
     {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         setBackground(Color.LIGHT_GRAY);
         setChapterList(chapterListRep);
-
     }
 
     /**
      * Repaints list of chapters
      * @param chapterListRep representation of chapters structure
      * */
-    public void setChapterList(LinkedList chapterListRep)
+    public void setChapterList(LinkedList<ChapterRepresentation> chapterListRep)
     {
         removeAll();
         if(chapterListRep != null)
         {
-            Iterator iterator = chapterListRep.listIterator();
-            while (iterator.hasNext()) {
-                ChapterRepresentation chapterRep = (ChapterRepresentation) iterator.next();
+            for(ChapterRepresentation chapterRep : chapterListRep)
+            {
                 ChapterPanel chapterPanel = new ChapterPanel(chapterRep.getName(), chapterRep.getPath(),
                         chapterRep.getCorrect(), chapterRep.getInCorrect(), chapterRep.getActive());
-                if(chapterRep.getActive() > 0)
-                    chapterPanel.setActive(true);
-                else
-                    chapterPanel.setActive(false);
+                chapterPanel.setActive(chapterRep.getActive() > 0);
                 add(chapterPanel);
             }
         }
